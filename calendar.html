@@ -2,40 +2,100 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Glow Track Calendar</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Diary Pro</title>
+    <!-- Explicit styling injection mapping root theme exactly across MPA format as ordered. -->
+    <style>
+         :root {--primary-color: #FF5A7A; --bg-color: #FEF1F6;} body.preg-mode{--primary-color: #5AA1FF; --bg-color:#F1F8FE;} *{box-sizing: border-box;}
+         body { margin:0; padding:20px 0 95px 0; background:var(--bg-color); font-family:'SF Pro Display', sans-serif;}
+         h1{font-size:24px; text-align:center;} 
+         .nvdBar {position:fixed; bottom:0; left:0; right:0; background:#fff; height:80px; display:flex; justify-content:space-evenly; z-index:9; align-items:center; border-top-left-radius:30px; border-top-right-radius:30px;}
+         .ic {width:30px; fill:none; stroke:#ccc; stroke-width:2;} .na .ic {stroke:var(--primary-color);}
+
+         .calCrd { background:#fff; margin:20px; border-radius:30px; padding:24px; box-shadow:0 15px 35px rgba(255, 90, 122, 0.08);}
+         .calTxn {display:flex; justify-content:space-between; align-items:center;}
+         .ctrB{ border:none; background:#F8F8FA; color:var(--primary-color); padding:10px 18px; border-radius:15px; font-weight:700;}
+         
+         .clmGd { display: grid; grid-template-columns: repeat(7,1fr); text-align:center; gap:8px; margin-top:20px; }
+         .gNam { font-weight:800; color:#B0AFB5; font-size:12px; }
+         .celm { height: 42px; display:flex; justify-content:center; align-items:center; border-radius:50%; font-size:15px; font-weight:700; background:transparent;}
+         .cprD { background:var(--primary-color); color:#fff;} 
+         .cOrE { background:#FFF0EE; color:var(--primary-color); border:1.5px dashed var(--primary-color);}
+    </style>
 </head>
 <body>
-    <div id="toast">Msg</div>
+    <h1 data-hi="मैजिकल साइकिल कैलेंडर 📅" data-en="Chronicles Planner 📅"></h1>
+    <p style="text-align:center; color:#999; font-weight:600; font-size:14px; margin-top:-10px;" id="uNxG">Wait...</p>
 
-    <div class="page-title">कैलेंडर डायरी 🗓️</div>
+    <div class="calCrd">
+         <div class="calTxn">
+             <button class="ctrB" onclick="slDxn(-1)">‹</button> <span id="mtXG" style="font-size:18px; font-weight:800; color:#333">Load...</span> <button class="ctrB" onclick="slDxn(1)">›</button>
+         </div>
+         
+         <div class="clmGd" id="mCalPrc"></div>
+    </div>
     
-    <div class="card" style="padding-bottom: 30px;">
-        <div class="month-controls">
-            <button class="m-btn" onclick="shftCal(-1)">❮</button>
-            <div class="month-label" id="calTitleObj">Month 2026</div>
-            <button class="m-btn" onclick="shftCal(1)">❯</button>
-        </div>
+    <div style="text-align:center; padding: 20px;" data-en="Pink represents tracking phases visually generated natively per localized maths on cycle params." data-hi="गुलाबी घेरे या डॉट बताते हैं कि पीरियड लाइव चालू हैं। डायनामिक रूप से यहाँ मैप होगा।">...</div>
+
+    <div class="nvdBar">
+         <a onclick="location.href='index.html'"><svg class="ic"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+         <a onclick="location.href='calendar.html'" class="na"><svg class="ic"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></a>
+         <a onclick="location.href='symptoms.html'" style="margin-top:-25px; background:var(--primary-color); padding:10px; border-radius:50%; box-shadow:0 8px 15px rgba(255, 90, 122,0.3);"><svg class="ic" style="stroke:#fff"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
+         <a onclick="location.href='settings.html'"><svg class="ic"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg></a>
+    </div>
+
+    <!-- Math Independent Block System so file lives isolated powerfully -->
+    <script>
+        const mmUser=JSON.parse(localStorage.getItem('userData'));
+        let mnCfg=JSON.parse(localStorage.getItem('appConfig'))||{lang:'hi', pregMode:false};
         
-        <div class="c-grid" id="calSpaceBox">
-            <!-- Will render securely by master APP.JS boot function -->
-        </div>
-    </div>
-    
-    <div class="phase-card">
-        <b>💡 फेज़ हिंट:</b> आपके शरीर का सिस्टम अभी जिस स्थिति में है, इसे साइंटिफिक कैलेंडर के जरिये ऊपर दिखाया गया है। नीला मतलब फर्टिलिटी, और गहरा गुलाबी मतलब पीरियड्स है।
-    </div>
-    
-    <!-- Using exact shared SVG Navigation Module! -->
-    <div class="bottom-nav" id="mainBar">
-        <a href="index.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span class="nav-label">होम</span></a>
-        <a href="calendar.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span class="nav-label">डायरी</span></a>
-        <a href="symptoms.html" class="nav-item fab" style="color:white;"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
-        <a href="tips.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg><span class="nav-label">सहारा</span></a>
-        <a href="settings.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg><span class="nav-label">मेन्यू</span></a>
-    </div>
+        let cMxx=new Date().getMonth(); let cYrx=new Date().getFullYear();
 
-    <script src="app.js"></script>
+        function renderDOMX(){
+             document.querySelectorAll('[data-'+mnCfg.lang+']').forEach(j=> j.innerHTML = j.getAttribute('data-'+mnCfg.lang) );
+             if(mnCfg.pregMode) document.body.classList.add('preg-mode');
+        }
+        
+        function rMthsMathPx(ddzMsxDateToChk){
+             if(!mmUser||mnCfg.pregMode) return {cPd:false, cPred:false};
+             let uxLtMx = new Date(mmUser.lastDate).setHours(0,0,0,0);
+             let lgLenXx = parseInt(mmUser.cycleLength) * 86400000;
+             let cDiffXx = Math.floor((ddzMsxDateToChk - uxLtMx) / lgLenXx); 
+             if(cDiffXx < 0) return false;
+             let mStarXx = uxLtMx + (cDiffXx * lgLenXx); 
+             let pEd = mStarXx + (parseInt(mmUser.duration-1) * 86400000); 
+
+             // check precise math logic for overlapping period windows natively.
+             let pLxxLive = (ddzMsxDateToChk >= mStarXx && ddzMsxDateToChk <= pEd);
+             let ePdFwDr = pLxxLive && ddzMsxDateToChk > new Date().setHours(0,0,0,0);
+             return { cPd: pLxxLive && !ePdFwDr, cPred: ePdFwDr};
+        }
+
+        function dDx(MxP, Yxp){
+             let box = document.getElementById('mCalPrc'); box.innerHTML = "";
+             document.getElementById('mtXG').innerText = new Date(Yxp,MxP).toLocaleString(mnCfg.lang=='hi'?'hi-IN':'en-US',{month:'short', year:'numeric'});
+             let dtN=(mnCfg.lang=='hi')?['सोम','मंग','बुध','गुरु','शुक्र','शनि','रवि'] :['Mo','Tu','We','Th','Fr','Sa','Su'];
+             dtN.forEach(x=> box.innerHTML += `<div class="gNam">${x}</div>`);
+
+             let xDayxst1=new Date(Yxp, MxP, 1).getDay(); xDayxst1=(xDayxst1===0)?6:xDayxst1-1; 
+             for(let k=0;k<xDayxst1;k++) box.innerHTML+=`<div></div>`;
+             
+             let xMxDkssm = new Date(Yxp,MxP+1, 0).getDate();
+             for(let ixn=1; ixn<=xMxDkssm; ixn++){
+                 let mkDoxMsx = new Date(Yxp, MxP, ixn).setHours(0,0,0,0);
+                 let mStatXxc = rMthsMathPx(mkDoxMsx); 
+                 
+                 let cdN = "celm"; 
+                 if(mStatXxc.cPd) cdN+=" cprD"; 
+                 else if (mStatXxc.cPred) cdN+=" cOrE";
+                 box.innerHTML += `<div class="${cdN}">${ixn}</div>`;
+             }
+        }
+        function slDxn(dxxRk) {
+             cMxx += dxxRk; if(cMxx>11){cMxx=0; cYrx++;} if(cMxx<0){cMxx=11;cYrx--;} dDx(cMxx,cYrx);
+        }
+        
+        window.onload=()=> { renderDOMX(); if(mmUser) document.getElementById('uNxG').innerText=mmUser.name+", Check records"; dDx(cMxx,cYrx);}
+    </script>
 </body>
 </html>
