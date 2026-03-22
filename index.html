@@ -3,101 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Glow Track</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Glow Wellness Tracker</title>
+    <!-- ============================================== 
+         EMBEDDED STYLES FOR ISOLATION & SPEED (100% Custom Pro UX)
+    =============================================== -->
+    <style>
+        :root {
+            --bg-color: #FEF1F6;
+            --primary-color: #FF5A7A;
+            --primary-grad: linear-gradient(135deg, #FF5A7A, #FF7696);
+            --card-bg: #FFFFFF;
+            --text-dark: #2B2B32;
+            --text-muted: #8E8D93;
+            --danger: #FF426A;
+            --success: #1CC489;
+            --shadow-soft: 0 10px 35px rgba(255, 90, 122, 0.08);
+            --modal-bg: rgba(0,0,0,0.6);
+        }
+        
+        /* Theme Toggling Core for Pregnancy Support (Baby Theme) */
+        body.preg-mode {
+            --bg-color: #F1F8FE;
+            --primary-color: #5AA1FF;
+            --primary-grad: linear-gradient(135deg, #5AA1FF, #76CEFF);
+            --danger: #FF7696;
+            --shadow-soft: 0 10px 35px rgba(90, 161, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0 0 95px 0; background: var(--bg-color); font-family: 'SF Pro Display', sans-serif; color: var(--text-dark); transition: background 0.4s;}
+        
+        /* Master Input & UI Engine */
+        .card { background: var(--card-bg); margin: 0 20px 20px; border-radius: 30px; padding: 24px; box-shadow: var(--shadow-soft); transition: 0.3s; position: relative;}
+        input, select { width: 100%; padding: 15px 18px; margin-bottom: 20px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: 18px; font-size: 16px; background: #F8F9FA; color: var(--text-dark); outline:none;}
+        input:focus { border-color: var(--primary-color); }
+        .btn { width: 100%; background: var(--primary-grad); color: white; padding: 16px; border: none; border-radius: 20px; font-weight: bold; font-size: 16px; cursor:pointer; margin-top:10px; transition:0.3s;}
+        .btn:active { transform: scale(0.96); opacity:0.8;}
+        
+        /* Top Navigation Hero & Realtime Box */
+        .top-hero { padding: 40px 24px 20px 24px; }
+        .greet { font-size: 26px; font-weight: 800; }
+        
+        .timer-box { margin-top: 10px; display:inline-block; background: rgba(255,255,255,0.7); padding:10px 18px; border-radius:18px; border:1px solid rgba(255,90,122,0.15); display: flex; align-items:center; gap: 8px; max-width: 90%; margin-left: auto; margin-right: auto;}
+        body.preg-mode .timer-box { border-color: rgba(90, 161, 255, 0.2); }
+        .t-chunk { font-size: 18px; font-weight: 800; color: var(--primary-color); display:flex; flex-direction:column; align-items:center; min-width:32px; }
+        .t-label { font-size: 10px; color: var(--text-muted); font-weight: bold;}
+        .sep { font-weight: bold; color:var(--text-muted); padding-bottom:12px; }
+
+        /* Powerful Circle Graph Live View */
+        .circ-wrap { display: flex; justify-content: center; position: relative; margin: 10px 0 25px; }
+        .circ-progress { position:relative; width: 250px; height: 250px; display:flex; justify-content:center; align-items:center; }
+        .circ-bg, .circ-ring { stroke-width: 14; fill: none; r: 105; cx: 125; cy: 125;}
+        .circ-bg { stroke: #FFF; box-shadow: var(--shadow-soft);}
+        .circ-ring { stroke: url(#dynamicGrad); stroke-linecap: round; stroke-dasharray: 660; stroke-dashoffset: 660; transition: stroke-dashoffset 0.8s; transform: rotate(-90deg); transform-origin: 50% 50%;}
+        
+        .inner-plate { width: 210px; height: 210px; background: #fff; border-radius: 50%; box-shadow: inset 0 10px 20px rgba(0,0,0,0.04); position:absolute; display:flex; flex-direction:column; justify-content:center; align-items:center;}
+        .main-huge { font-size: 60px; font-weight: 800; line-height: 1; letter-spacing: -2px;}
+        .p-stat { color:var(--primary-color); background: var(--bg-color); padding:5px 15px; border-radius: 12px; font-weight: 700; font-size:12px; margin-bottom:5px; transition:0.3s;}
+
+        .card-dual { display: grid; grid-template-columns: 1fr 1fr; gap:15px; margin: 0 20px; }
+        .edit-icn { cursor:pointer; width:30px; height:30px; background:var(--primary-grad); color:white; border-radius:10px; display:flex; align-items:center; justify-content:center; margin: auto; opacity: 0.9;}
+
+        /* Unified Bottom NavBar For 100M+ Power feel */
+        .navbar-base { position: fixed; bottom: 0; width: 100%; height: 80px; background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); border-top-left-radius: 25px; border-top-right-radius: 25px; display: flex; justify-content: space-around; align-items: center; z-index: 999; box-shadow: 0 -5px 15px rgba(0,0,0,0.03);}
+        .nav-link { color: #A1A0AA; text-align: center; font-size: 11px; font-weight: bold; width:60px; transition: 0.3s; cursor:pointer;}
+        .nav-link.active { color: var(--primary-color); }
+        .nav-link.active .icon svg { transform: scale(1.15); }
+        .icon { width:24px; height:24px; margin:0 auto 4px;}
+        .icon svg { stroke: currentColor; fill:none; stroke-width: 2.5; stroke-linecap: round; width:100%; height:100%; transition:0.3s;}
+        
+        /* Modal Design UX (Editing Base details seamlessly) */
+        .modal { position:fixed; inset:0; z-index:9999; background:var(--modal-bg); display:none; justify-content:center; align-items:flex-end; padding-bottom:env(safe-area-inset-bottom); animation: fade 0.3s;}
+        .modal-body { width: 100%; background: #fff; padding:30px 24px; border-radius: 40px 40px 0 0; transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.1, 1, 0.3, 1);}
+        .modal.open { display:flex; } .modal.open .modal-body { transform:translateY(0); }
+        
+        /* Universal Smart Notifications Toaster / POP */
+        #gToast { visibility: hidden; position: fixed; bottom:110px; left: 50%; transform: translateX(-50%); background:#333; color:white; padding:12px 24px; border-radius: 20px; z-index: 10000; box-shadow:0 8px 15px rgba(0,0,0,0.2); font-size:14px; opacity:0; transition:0.3s; display:flex; align-items:center; gap:8px;}
+        #gToast.show { visibility: visible; opacity:1; bottom: 100px; }
+        
+        @keyframes fade {from {opacity:0} to {opacity:1}}
+    </style>
 </head>
 <body>
-    <div id="toast">Msg Here</div>
+    <div id="gToast"><span id="gToastIco">✨</span><span id="gToastMsg"></span></div>
 
-    <!-- REGISTRATION VIEW (Visible only initially if NO data) -->
-    <div id="registerView" style="display:none; padding-top:40px;">
-        <h1 style="text-align:center; color:var(--text-dark); padding: 0 20px;">Hey Beautiful ✨</h1>
-        <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-top:5px;">शुरुआत करने के लिए विवरण दर्ज करें</p>
+    <!-- MAIN REGISTRATION WRAPPER (Auto Hides / Dual Language Active) -->
+    <div id="initGate" style="display: none; padding-top:20vh;">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <div style="font-size:38px; font-weight:800; color:var(--primary-color);">Glow<span style="color:#222;">Track</span></div>
+            <p style="color:var(--text-muted); font-weight:600;" data-en="Connect with your health" data-hi="आपके स्वास्थ्य का सच्चा साथी">...</p>
+        </div>
         
-        <div class="card" style="margin-top: 25px;">
-            <div class="input-group">
-                <label>आपका शुभ नाम / Name <span class="sub-label">*</span></label>
-                <input type="text" id="reg-name" placeholder="E.g., Suhana">
-            </div>
-            <div class="input-group">
-                <label>उम्र / Age</label>
-                <input type="number" id="reg-age" placeholder="24">
-            </div>
-            <div class="input-group">
-                <label>पिछली माहवारी शुरू हुई / Last Period <span class="sub-label">*</span></label>
-                <input type="date" id="reg-lastDate">
-            </div>
-            <div class="home-row" style="margin: 0; gap:10px;">
-                <div class="input-group" style="margin:0;">
-                    <label>चक्र की लंबाई (Days)</label>
-                    <input type="number" id="reg-cycleLength" value="28">
+        <!-- Native Switcher strictly inside logic wrapper for seamless feel -->
+        <div class="card">
+            <h2 data-en="Tell us about yourself 🌸" data-hi="शुरुआत करने के लिए प्रोफाइल भरें 🌸" style="text-align:center;"></h2>
+            <br>
+            <label style="font-weight:700; margin-left: 5px;" data-en="Your Nickname" data-hi="आपका शुभ नाम">Name</label>
+            <input type="text" id="regUser" placeholder="e.g. Suhana">
+            
+            <label style="font-weight:700; margin-left: 5px;" data-en="Age" data-hi="उम्र"></label>
+            <input type="number" id="regAge" placeholder="24">
+
+            <label style="font-weight:700; margin-left: 5px;" data-en="Last Period Day (Editable later)" data-hi="माहवारी शुरू होने का आखिरी दिन"></label>
+            <input type="date" id="regDate">
+            
+            <div style="display:flex; gap:10px;">
+                <div>
+                    <label style="font-size:12px; font-weight:700" data-en="Cycle (Days)" data-hi="मासिक चक्र"></label>
+                    <input type="number" id="regCycle" value="28">
                 </div>
-                <div class="input-group" style="margin:0;">
-                    <label>कुल अवधि</label>
-                    <input type="number" id="reg-duration" value="5">
+                <div>
+                    <label style="font-size:12px; font-weight:700" data-en="Bleed (Days)" data-hi="रक्तस्राव (दिन)"></label>
+                    <input type="number" id="regFlow" value="5">
                 </div>
             </div>
-            <button class="btn" onclick="submitProfile()" style="margin-top: 20px;">शुरू करें 💖</button>
-            <div class="disclaimer">यह डाटा केवल आपके फोन में लोकल सेव रहेगा, 100% प्राइवेट!</div>
+
+            <!-- Instant Lang Selection Box internally handled -->
+            <label style="font-size:12px; font-weight:700" data-en="Select Preferred Language" data-hi="अपनी भाषा चुनें"></label>
+            <select id="regLangPref" onchange="testTempSwitch(this.value)">
+                <option value="en">English - I speak english</option>
+                <option value="hi" selected>हिंदी - ऐप मेरी भाषा में बोलें</option>
+            </select>
+            
+            <button class="btn" onclick="saveAuth()" data-en="Setup My Profile 🚀" data-hi="ट्रैकर शुरू करें 🚀">..</button>
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
-    <div id="dashView" class="d-none">
-        <div class="header-hero">
-            <h1 class="greeting-title">नमस्ते, <span id="dashUser">Suhana</span> 🌸</h1>
-            <p class="greeting-sub">Let's check your inner wellness flow</p>
-            <div class="support-text" id="dashSupportMsg">थोड़ा मुस्कुराएं! आप बहुत हिम्मत वाली हैं!</div>
+    <!-- PRODUCTION LIVE DASHBOARD -->
+    <div id="dashBoardGate" style="display: none;">
+        <div class="top-hero">
+            <h1 class="greet" data-hi="नमस्ते, <span id='usrNm'>-</span> 🌸" data-en="Hello, <span id='usrNm'>-</span> 🌸">नमस्ते...</h1>
+            <p style="font-weight: 500; font-size:15px; margin-top:2px; color:var(--text-muted);" id="ovPhaseMsg">--</p>
+        </div>
+        
+        <div class="circ-wrap">
+            <svg class="circ-progress">
+                <defs>
+                    <linearGradient id="dynamicGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#FF5A7A" id="gdCol1" />
+                        <stop offset="100%" stop-color="#FF7696" id="gdCol2" />
+                    </linearGradient>
+                </defs>
+                <circle class="circ-bg" cx="125" cy="125" r="105"></circle>
+                <circle class="circ-ring" cx="125" cy="125" r="105" id="cStroke"></circle>
+            </svg>
+            <div class="inner-plate">
+                <span class="p-stat" id="progPillsTag">Predicting...</span>
+                <span class="main-huge" id="txtDaysVal">--</span>
+                <span style="font-weight:700; color:#555; margin-top:5px; font-size:15px;" id="lblTimer" data-hi="दिन बचे हैं" data-en="Days Left">Days</span>
+            </div>
+        </div>
+        
+        <!-- Master RealTime Logic Extender Block -->
+        <div style="text-align: center; width: 100%;">
+            <div class="timer-box" id="timeCounter">
+                <div class="t-chunk"><span id="ltH">00</span><span class="t-label">Hr</span></div> <span class="sep">:</span>
+                <div class="t-chunk"><span id="ltM">00</span><span class="t-label">Min</span></div> <span class="sep">:</span>
+                <div class="t-chunk"><span id="ltS">00</span><span class="t-label">Sec</span></div>
+            </div>
         </div>
 
-        <div class="hero-progress-area">
-            <div class="circular-progress">
-                <svg viewBox="0 0 260 260" class="progress-ring">
-                    <defs>
-                        <linearGradient id="gradientPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#FF5A7A"/>
-                            <stop offset="100%" stop-color="#FFA8BA"/>
-                        </linearGradient>
-                    </defs>
-                    <circle cx="130" cy="130" r="110" class="progress-ring__bg"></circle>
-                    <circle cx="130" cy="130" r="110" class="progress-ring__circle" id="animRing"></circle>
-                </svg>
-                <div class="inner-circle">
-                    <div class="status-badge" id="dashPhaseName">Period Tracker</div>
-                    <div class="days-left-val" id="dashVal">--</div>
-                    <div class="days-label" id="dashValSub">दिन बचे हैं (Days left)</div>
+        <div class="card-dual" style="margin-top: 20px;">
+            <div class="card" style="padding: 16px;">
+                <h4 style="color:var(--text-muted); font-size:12px; margin:0;" data-en="Cycle Length" data-hi="चक्र आकार (लेंग्थ)">--</h4>
+                <div style="font-size:20px; font-weight: 800; display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                    <span id="cTxtDt">28 D</span> 
+                    <div class="edit-icn" onclick="popEditor()"><svg viewBox="0 0 24 24" width="14" fill="white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></div>
                 </div>
-                <div class="prob-text">Low Pregnancy Likely</div>
+            </div>
+            <div class="card" style="padding: 16px;">
+                 <h4 style="color:var(--text-muted); font-size:12px; margin:0;" data-hi="अगला शुरू" data-en="Expected Start">--</h4>
+                 <div style="font-size:20px; font-weight: 800; color:var(--primary-color); margin-top:5px;" id="cNxDt">24 Mar</div>
             </div>
         </div>
+    </div>
 
-        <div class="home-row">
-            <div class="mini-card">
-                <div class="mini-title">Day of Cycle</div>
-                <div class="mini-val">Day <span id="dashDay" class="pink-text">--</span></div>
-            </div>
-            <div class="mini-card">
-                <div class="mini-title">Next Est. Start</div>
-                <div class="mini-val pink-text" id="dashNext">--</div>
-            </div>
+    <!-- UPDATE MODAL (Replaced without breaking anything, live connection maintained) -->
+    <div class="modal" id="modaleditor" onclick="if(event.target==this) closeEditor()">
+        <div class="modal-body">
+            <h2 data-en="Adjust Track Details" data-hi="डायरी विवरण ठीक करें">Fix Record</h2>
+            <br>
+            <label style="font-weight:700;" data-hi="आखरी तारीख बदलें" data-en="Last recorded cycle"></label>
+            <input type="date" id="mdLtst" style="border: 2px solid var(--primary-color);">
+            
+            <label style="font-weight:700;" data-hi="आपका एवरेज साइकिल" data-en="Your default Cycle length"></label>
+            <input type="number" id="mdLn" value="28">
+            <button class="btn" onclick="saveEditorRealtime()" data-hi="लाइव ट्रैक में लागू करें" data-en="Save changes locally">Live Apply</button>
         </div>
-        <p style="text-align: center; font-weight: bold; padding: 20px; font-size:14px; opacity:0.5;">Swipe / Navigate tools to see more Magic</p>
     </div>
 
-    <!-- GLASS NAV PRO BOTTOM NAVIGATION -->
-    <div class="bottom-nav" id="mainBar">
-        <a href="index.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span class="nav-label">होम</span></a>
-        
-        <a href="calendar.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span class="nav-label">डायरी</span></a>
-        
-        <!-- Big Heart Center Action Base -->
-        <a href="symptoms.html" class="nav-item fab" style="color:white;"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
-        
-        <a href="tips.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg><span class="nav-label">सहारा</span></a>
-        
-        <a href="settings.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg><span class="nav-label">मेन्यू</span></a>
+
+    <!-- ================== FULL GLASS NAVIGATOR ================== -->
+    <div class="navbar-base">
+        <a onclick="location.href='index.html'" class="nav-link active">
+            <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
+            <span data-en="Home" data-hi="होम">Home</span>
+        </a>
+        <a onclick="location.href='calendar.html'" class="nav-link">
+            <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+            <span data-en="Diary" data-hi="डायरी">Diary</span>
+        </a>
+        <a onclick="location.href='symptoms.html'" class="nav-link" style="color:var(--primary-color); transform:translateY(-12px)">
+            <div class="icon" style="background:var(--primary-grad); border-radius:50%; width:50px; height:50px; padding:12px; box-shadow:0 10px 20px rgba(255,90,122,0.4);"><svg style="stroke:#fff" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+            <span data-hi="फीलिंग" data-en="Track" style="margin-top:2px;">Track</span>
+        </a>
+        <a onclick="location.href='tools.html'" class="nav-link">
+            <div class="icon"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div>
+            <span data-en="Tools" data-hi="औज़ार">Tools</span>
+        </a>
+        <a onclick="location.href='settings.html'" class="nav-link">
+            <div class="icon"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg></div>
+            <span data-en="Settings" data-hi="सेटिंग">Config</span>
+        </a>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Embedded Pro Scripts Single Dependency Framework -->
+    <script>
+        const appMem = JSON.parse(localStorage.getItem('userData'));
+        let configMem = JSON.parse(localStorage.getItem('appConfig')) || { lang: 'hi', pregMode: false };
+        let actCycleMs, targEnd;
+        let ltTimerHandle;
+
+        function setToast(msg, ok=true) {
+            let el = document.getElementById('gToast');
+            document.getElementById('gToastIco').innerText = ok ? "✅" : "⚠️";
+            document.getElementById('gToastMsg').innerText = msg;
+            el.className="show"; setTimeout(()=>el.className="", 3500);
+        }
+        function uiTxtRender() {
+            document.querySelectorAll('[data-'+configMem.lang+']').forEach(nd => {
+                nd.innerHTML = nd.getAttribute('data-'+configMem.lang).replace('{n}', appMem?appMem.name:'User');
+            });
+            if(appMem) document.getElementById('usrNm').innerText = appMem.name;
+        }
+
+        // Live Maths Core Logic Extended for exact phone ticks! 
+        function runMasterCalculator(user) {
+            const curStr = new Date().getTime();
+            const lr = new Date(user.lastDate).setHours(0,0,0,0);
+            actCycleMs = parseInt(user.cycleLength) * 86400000;
+            const diffCys = Math.floor((curStr - lr) / actCycleMs);
+            let latestSt = lr + Math.max(0, diffCys * actCycleMs);
+            targEnd = latestSt + actCycleMs; // the pinpoint End date Real MS target!
+
+            if(configMem.pregMode) return { tp: 'PREG' };
+            return { rawEnd: targEnd }; 
+        }
+
+        function spinLiveCountdowns() {
+             const nowMs = new Date().getTime();
+             let dr = targEnd - nowMs;
+
+             // Live Dynamic Theme UI Updates for emotional effect
+             let inRedZne = false; let msgPh = ""; let pillsTag = ""; let vTxt = "";
+             
+             if (dr <= 0) {
+                  // Past period Expected point
+                  let absLt = Math.abs(dr); 
+                  let dx = Math.ceil(absLt / 86400000);
+                  inRedZne = true; msgPh = configMem.lang=='hi'?"हो सकता है पीरियड मिस हो गए हों! ख्याल रखें 💖":"Looks like periods are late. Be safe! 💖";
+                  pillsTag = configMem.lang=='hi'?"अवधि बीत चुकी":"Past Expected"; vTxt = `${dx} Days Late`;
+             } else {
+                 let tDy = Math.floor(dr / 86400000);
+                 let rMod = dr % 86400000;
+                 let hr = Math.floor(rMod / 3600000);
+                 let mm = Math.floor((rMod % 3600000) / 60000);
+                 let s = Math.floor((rMod % 60000)/ 1000);
+                 
+                 document.getElementById('ltH').innerText = hr.toString().padStart(2,'0');
+                 document.getElementById('ltM').innerText = mm.toString().padStart(2,'0');
+                 document.getElementById('ltS').innerText = s.toString().padStart(2,'0');
+                 
+                 vTxt = tDy; 
+                 pillsTag = (configMem.lang=='hi'?"स्वस्थ ट्रैक":"Stable Check");
+
+                 // Overlap logical phase identification based on live days
+                 if(tDy <= 14 && tDy >=12) {
+                     msgPh = configMem.lang=='hi'?"आज ओवुलेशन दिन हैं, फीलिंग फ्रेश! 🌟":"Ovulation active. Radiant mode! 🌟"; pillsTag="ओवुलेशन / फर्टाइल";
+                     document.getElementById('cStroke').style.stroke = "#FFAA2B";
+                 } else if (tDy < 3) {
+                     msgPh = configMem.lang=='hi'?"जल्दी ही डेट्स आने वाली हैं, सिंकाई शुरू करें 🔥":"Getting Closer. Keep water bags ready! 🔥";
+                 } else { msgPh = configMem.lang=='hi'?"अंदर से आप हीलिंग और ग्रोथ मोड में हैं 💖":"Healing & Growing gently daily! 💖"; document.getElementById('cStroke').style.stroke = "url(#dynamicGrad)"; }
+
+                 // Math Live dash percentage Update precisely! 
+                 let runPerc = ((actCycleMs - dr) / actCycleMs) * 660; 
+                 document.getElementById('cStroke').style.strokeDashoffset = 660 - runPerc;
+             }
+
+             if(configMem.pregMode) {
+                 // Future Logic: If toggle in Setting ON -> App enters full baby mode dashboard magically.
+                 document.body.classList.add('preg-mode'); 
+                 document.getElementById('ovPhaseMsg').innerText = configMem.lang=='hi'?"नई खुशियां पनप रही हैं ✨👶🏻":"New joy growing ✨👶🏻";
+                 document.getElementById('lblTimer').innerText = configMem.lang=='hi'?"वीक्स (हफ्ते)":"Weeks Baby";
+                 document.getElementById('timeCounter').style.display = "none";
+                 let wkTr=Math.floor((nowMs - new Date(appMem.lastDate).getTime())/604800000);
+                 document.getElementById('txtDaysVal').innerText = "W"+wkTr; 
+                 document.getElementById('cStroke').style.strokeDashoffset = 0; // complete loop style.
+                 document.getElementById('progPillsTag').innerText = "Baby mode 💙";
+                 return;
+             }
+             
+             document.getElementById('progPillsTag').innerText = pillsTag;
+             document.getElementById('txtDaysVal').innerText = vTxt; 
+             document.getElementById('ovPhaseMsg').innerText = msgPh; 
+        }
+
+        // Live Init Hooks
+        function startupSeq() {
+             if(appMem) {
+                  document.getElementById('dashBoardGate').style.display = 'block';
+                  let msObj = runMasterCalculator(appMem);
+                  document.getElementById('cTxtDt').innerText = appMem.cycleLength + " Days";
+                  document.getElementById('cNxDt').innerText = new Date(msObj.rawEnd || targEnd).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+                  uiTxtRender(); spinLiveCountdowns(); 
+                  ltTimerHandle = setInterval(spinLiveCountdowns, 1000);
+                  
+                  // Pop Emotion Toasts silently to comfort
+                  if(!sessionStorage.getItem('tkd')){ setToast(configMem.lang==='hi'?`ख्याल रखना ${appMem.name} जी!`:`Stay strong, ${appMem.name}!`, true); sessionStorage.setItem('tkd','yes'); }
+             } else {
+                  document.getElementById('initGate').style.display = 'block';
+                  uiTxtRender();
+             }
+        }
+        function testTempSwitch(lg){ configMem.lang=lg; uiTxtRender(); }
+
+        // Data Entry / Storage Native Unbroken Bridge Checks
+        function saveAuth() {
+            let usName=document.getElementById('regUser').value;
+            let usAge=document.getElementById('regAge').value;
+            let ltDat=document.getElementById('regDate').value;
+            let cx1=document.getElementById('regCycle').value; let cf2=document.getElementById('regFlow').value;
+            if(!usName||!ltDat){ setToast("Sab Details Daale! ⚠️", false); return; }
+            localStorage.setItem('userData', JSON.stringify({name:usName,age:usAge,lastDate:ltDat,cycleLength:cx1,duration:cf2}));
+            localStorage.setItem('appConfig', JSON.stringify(configMem)); 
+            
+            try { 
+                 if(window.Android && window.Android.scheduleNotification) 
+                    window.Android.scheduleNotification(ltDat, cx1, "1"); // NATIVE SECURED
+            }catch(e){}
+            setToast("Setting profile!", true); setTimeout(()=>location.reload(), 1200);
+        }
+
+        // Dynamic Dates editor Realtime Modulator!
+        function popEditor() {
+            document.getElementById('mdLtst').value = appMem.lastDate; document.getElementById('mdLn').value = appMem.cycleLength;
+            document.getElementById('modaleditor').classList.add('open');
+        }
+        function closeEditor() { document.getElementById('modaleditor').classList.remove('open'); }
+        
+        function saveEditorRealtime() {
+            appMem.lastDate = document.getElementById('mdLtst').value; appMem.cycleLength = document.getElementById('mdLn').value;
+            localStorage.setItem('userData', JSON.stringify(appMem));
+            
+            // Recall exactly identical hook without messing API
+            try{ if(window.Android) window.Android.scheduleNotification(appMem.lastDate, appMem.cycleLength, localStorage.getItem('lastFreqKey') || "1"); }catch(x){}
+            
+            closeEditor(); setToast(configMem.lang=='hi'?"नया डाटा तुरंत लागू हो गया! 🎯":"New info LIVE tracked!", true); 
+            clearInterval(ltTimerHandle); startupSeq();
+        }
+
+        document.addEventListener('DOMContentLoaded', startupSeq);
+    </script>
 </body>
 </html>
