@@ -2,60 +2,86 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Track Health | Symptoms</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Daily Note</title>
+    <!-- Explicit styling Injection -->
+    <style>
+         :root {--primary-color: #FF5A7A; --bg: #FEF1F6;} body.preg-mode{--primary-color: #5AA1FF; --bg:#F1F8FE;} *{box-sizing: border-box;}
+         body { margin:0; padding:30px 20px 95px 20px; background:var(--bg); font-family:'SF Pro Display', sans-serif;}
+         h2{font-size:26px; color:#222;} .bxb{ color:var(--primary-color);}
+         
+         .lgGrD { display:flex; flex-wrap:wrap; gap:12px; margin: 18px 0 35px 0;}
+         .gpxItem { background: #fff; padding:12px 24px; border-radius:30px; font-weight:700; font-size:15px; border:2px solid transparent; cursor:pointer; color:#7E7E8F; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition:0.3s;}
+         .gpxItem.xcL { background:var(--primary-color); border-color:transparent; color:#fff; transform:translateY(-2px); box-shadow:0 8px 25px rgba(255, 90, 122, 0.4);}
+
+         .sbmNxKbtn { width:100%; padding:18px; border:none; border-radius: 20px; font-weight: 800; color:white; font-size: 16px; margin-top:10px; transition:0.3s; }
+         .rBgKnxM { background:linear-gradient(135deg, var(--primary-color), #FFA8BA); }
+         body.preg-mode .gpxItem.xcL {background:var(--primary-color); box-shadow:0 8px 25px rgba(90, 161, 255, 0.4);}
+         
+         /* Pop up Engine Native UX Code Flow Inject! */
+         .succModxx { position:fixed; display:none; inset:0; align-items:center; justify-content:center; background:rgba(255, 255, 255,0.8); backdrop-filter:blur(8px); z-index:999; text-align:center;} 
+         .mNxxbxIck { background:#fff; padding:35px 40px; border-radius:35px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); } .xnxK { font-size:48px;}
+
+         /* Bar bottom system Native injected strictly identically isolated! */
+         .nvdBar {position:fixed; bottom:0; left:0; right:0; background:#fff; height:80px; display:flex; justify-content:space-evenly; z-index:9999; align-items:center; border-top-left-radius:30px; border-top-right-radius:30px;}
+         .ic {width:30px; fill:none; stroke:#ccc; stroke-width:2;} .na .ic {stroke:var(--primary-color);}
+    </style>
 </head>
 <body>
-    <div id="toast">Msg</div>
-
-    <div class="page-title">आज का दिन कैसा रहा? 💬</div>
-
-    <div class="card" style="padding-bottom: 25px;">
-        <div class="log-row">
-            <div class="log-title">🩸 बहाव की मात्रा (Flow Volume)</div>
-            <div class="chip-container">
-                <div class="chip" onclick="tglChip(this)">Heavy</div>
-                <div class="chip" onclick="tglChip(this)">Moderate</div>
-                <div class="chip" onclick="tglChip(this)">Light</div>
-                <div class="chip" onclick="tglChip(this)">Spotting</div>
-            </div>
-        </div>
-
-        <div class="log-row">
-            <div class="log-title">🥺 दर्द के संकेत (Signs)</div>
-            <div class="chip-container">
-                <div class="chip" onclick="tglChip(this)">Lower Back (कमर दर्द)</div>
-                <div class="chip" onclick="tglChip(this)">Cramps (पेट में ऐंठन)</div>
-                <div class="chip" onclick="tglChip(this)">Acne (मुहांसे)</div>
-                <div class="chip" onclick="tglChip(this)">Migraine</div>
-                <div class="chip" onclick="tglChip(this)">Fatigue (थकान)</div>
-            </div>
-        </div>
-
-        <div class="log-row">
-            <div class="log-title">🎭 आज आपका मन कैसा है? (Mood)</div>
-            <div class="chip-container">
-                <div class="chip" onclick="tglChip(this)">🥰 हैप्पी (Happy)</div>
-                <div class="chip" onclick="tglChip(this)">😕 दुखी (Sad)</div>
-                <div class="chip" onclick="tglChip(this)">😡 गुस्सा (Irritable)</div>
-                <div class="chip" onclick="tglChip(this)">😔 मन कर रहा है रो लूँ</div>
-                <div class="chip" onclick="tglChip(this)">⚡ एनर्जेटिक</div>
-            </div>
-        </div>
-        
-        <button class="btn" onclick="popToast('लॉग सहेज लिया गया! आप स्ट्रॉंग हैं। ❤️', 'success'); setTimeout(()=>location.href='index.html',1800);">आज का दिन सहेजें</button>
+    <h2 data-en="Body Map Tracker 🤍" data-hi="आज आप कैसा महसूस कर रही हैं?🤍"></h2>
+    
+    <div style="font-weight:700; margin-top:25px;" data-en="🩸 Menstruation bleeding phase status." data-hi="🩸 खून का बहाव कितना (Flow volume)?">Flow Type</div>
+    <div class="lgGrD">
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Normal/Mild</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Heavy Rush</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Spotting Only</div>
     </div>
 
-    <!-- NavBar (Bottom identical element logic kept) -->
-    <div class="bottom-nav" id="mainBar">
-        <a href="index.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
-        <a href="calendar.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></a>
-        <a href="symptoms.html" class="nav-item fab" style="color:white;"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
-        <a href="tips.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg></a>
-        <a href="settings.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg></a>
+    <div style="font-weight:700;" data-en="🥺 What Physical pain do you face right now? " data-hi="🥺 आपके शरीर में कहां परेशानी हो रही है?">Symptoms Signs</div>
+    <div class="lgGrD">
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Stomach Cramps (ऐंठन)</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Waist / Lower Back कमर</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Heaviness (भारीपन)</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Mild Headache / Stress</div>
+    </div>
+    
+    <div style="font-weight:700;" data-hi="🎭 मानसिक तनाव और भावनाएं" data-en="🎭 Emotional Stability state">Mind state</div>
+    <div class="lgGrD">
+        <div class="gpxItem" onclick="tkNxAxcC(this)">A bit crying sad 😔</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Easily Annoyed 😡</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Relaxed happy state 😇</div>
+        <div class="gpxItem" onclick="tkNxAxcC(this)">Extreme weak Fatigue😴</div>
     </div>
 
-    <script src="app.js"></script>
+    <button class="sbmNxKbtn rBgKnxM" onclick="xLogKkkMsxC(this)" data-en="SAVE TODAY'S NOTE LOG 🗃️" data-hi="अपनी हालत को लॉग / सहेजें 🗃️"></button>
+
+    <div class="succModxx" id="succPxMnGkQc">
+        <div class="mNxxbxIck">
+           <div class="xnxK">🌿</div><h2 data-en="Record Appended Beautiful!" data-hi="डाटा सेव हुआ!"></h2><p style="font-weight:700; color:var(--primary-color);" data-en="Be very patient with your healing body ✨" data-hi="आपका शरीर हिम्मत का रूप है, हार न माने✨"></p>
+        </div>
+    </div>
+
+    <div class="nvdBar">
+         <a onclick="location.href='index.html'"><svg class="ic"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+         <a onclick="location.href='calendar.html'"><svg class="ic"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg></a>
+         <a onclick="location.href='symptoms.html'" class="na" style="margin-top:-25px; background:var(--primary-color); padding:10px; border-radius:50%; box-shadow:0 8px 15px rgba(255, 90, 122,0.3);"><svg class="ic" style="stroke:#fff"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
+         <a onclick="location.href='settings.html'"><svg class="ic"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line></svg></a>
+    </div>
+
+    <script>
+        let mnCfg = JSON.parse(localStorage.getItem('appConfig'))||{lang:'hi', pregMode:false};
+        if(mnCfg.pregMode) document.body.classList.add('preg-mode');
+
+        document.querySelectorAll('[data-'+mnCfg.lang+']').forEach(a=>{a.innerText = a.getAttribute('data-'+mnCfg.lang);});
+
+        // Deep UX engagement animations natively
+        function tkNxAxcC(vxE_LckCmsxLncHnkNkxwE1){ vxE_LckCmsxLncHnkNkxwE1.classList.toggle('xcL'); }
+
+        // Live Appended Saves mock behavior successfully isolating dependencies 
+        function xLogKkkMsxC(xcMkcxqBc1C){
+             document.getElementById('succPxMnGkQc').style.display = "flex";
+             setTimeout(()=> { document.getElementById('succPxMnGkQc').style.display="none"; }, 4000);
+        }
+    </script>
 </body>
 </html>
