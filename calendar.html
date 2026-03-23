@@ -2,58 +2,137 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Personal Diary Pro</title>
-    <!-- Explicit styling injection mapping root theme exactly across MPA format as ordered. -->
     <style>
-         :root {--primary-color: #FF5A7A; --bg-color: #FEF1F6;} body.preg-mode{--primary-color: #5AA1FF; --bg-color:#F1F8FE;} *{box-sizing: border-box;}
-         body { margin:0; padding:20px 0 95px 0; background:var(--bg-color); font-family:'SF Pro Display', sans-serif;}
-         h1{font-size:24px; text-align:center;} 
-         .nvdBar {position:fixed; bottom:0; left:0; right:0; background:#fff; height:80px; display:flex; justify-content:space-evenly; z-index:9; align-items:center; border-top-left-radius:30px; border-top-right-radius:30px;}
-         .ic {width:30px; fill:none; stroke:#ccc; stroke-width:2;} .na .ic {stroke:var(--primary-color);}
-
-         .calCrd { background:#fff; margin:20px; border-radius:30px; padding:24px; box-shadow:0 15px 35px rgba(255, 90, 122, 0.08);}
-         .calTxn {display:flex; justify-content:space-between; align-items:center;}
-         .ctrB{ border:none; background:#F8F8FA; color:var(--primary-color); padding:10px 18px; border-radius:15px; font-weight:700;}
+         :root {--primary-color: #FF5A7A; --bg-color: #FEF1F6;} body.preg-mode{--primary-color: #5AA1FF; --bg-color:#F1F8FE;} *{box-sizing: border-box; -webkit-tap-highlight-color: transparent;}
+         body { margin:0; padding:30px 0 120px 0; background:var(--bg-color); font-family:'SF Pro Display', -apple-system, sans-serif; transition: background 0.5s ease; overflow-x: hidden;}
          
-         .clmGd { display: grid; grid-template-columns: repeat(7,1fr); text-align:center; gap:8px; margin-top:20px; }
-         .gNam { font-weight:800; color:#B0AFB5; font-size:12px; }
-         .celm { height: 42px; display:flex; justify-content:center; align-items:center; border-radius:50%; font-size:15px; font-weight:700; background:transparent;}
-         .cprD { background:var(--primary-color); color:#fff;} 
-         .cOrE { background:#FFF0EE; color:var(--primary-color); border:1.5px dashed var(--primary-color);}
+         /* Decorative Blobs */
+         .bg-blob { position: fixed; border-radius: 50%; filter: blur(60px); opacity: 0.5; z-index: -1; }
+         .blob-1 { width: 200px; height: 200px; background: var(--primary-color); top: -50px; left: -50px; animation: float-blob 8s infinite alternate ease-in-out, pulse-blob 6s infinite alternate; }
+         .blob-2 { width: 250px; height: 250px; background: #FFD1E3; bottom: 100px; right: -50px; animation: float-blob 10s infinite alternate-reverse ease-in-out, pulse-blob 7s infinite alternate; animation-delay: -3s; }
+         @keyframes float-blob { 0% { transform: translateY(0) scale(1) rotate(0deg); } 100% { transform: translateY(40px) scale(1.15) rotate(15deg); } }
+         @keyframes pulse-blob { 0% { opacity: 0.4; filter: blur(60px); } 100% { opacity: 0.7; filter: blur(40px); } }
+
+         h1{font-size:28px; text-align:center; color:#222; margin:0 0 5px 0; letter-spacing: -0.5px; animation: slideUpFade 0.8s both;} 
+         #uNxG { animation: slideUpFade 0.8s both; animation-delay: 0.1s; }
+
+         .calCrd { background:rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); margin:20px; border-radius:40px; padding:30px 24px; box-shadow:0 15px 40px rgba(255, 90, 122, 0.08); position: relative; border: 1px solid rgba(255,255,255,0.6); animation: slideUpFade 0.8s both; animation-delay: 0.2s;}
+         .calTxn {display:flex; justify-content:space-between; align-items:center;}
+         .ctrB{ border:none; background:#F8F9FA; color:var(--primary-color); width: 45px; height: 45px; border-radius:50%; font-size: 20px; font-weight:800; display:flex; align-items:center; justify-content:center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;} .ctrB:active { transform: scale(0.9);}
+         .clmGd { display: grid; grid-template-columns: repeat(7,1fr); text-align:center; gap:10px; margin-top:30px; }
+         .gNam { font-weight:800; color:#B0AFB5; font-size:13px; text-transform: uppercase;}
+         .celm { height: 45px; display:flex; justify-content:center; align-items:center; border-radius:50%; font-size:16px; font-weight:700; background:transparent; color:#444; transition: 0.3s;}
+         .cprD { background:var(--primary-color); color:#fff; box-shadow: 0 5px 15px rgba(255, 90, 122, 0.4); transform: scale(1.05);} 
+         .cOrE { background:#FFF0EE; color:var(--primary-color); border:2px dashed var(--primary-color);}
+         .legend { display: flex; justify-content: center; gap: 20px; margin-top: 30px; font-size: 13px; font-weight: 700; color: #666;}
+         .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 5px;}
+         .navv { position:fixed; bottom: 20px; left: 20px; right: 20px; height: 75px; display:flex; justify-content:space-around; align-items:center; background:rgba(255,255,255,0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index:9999; border-radius: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.5);}
+         .icnn { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; width: 60px; height: 100%; cursor: pointer;}
+         .icnn svg { width:26px; height:26px; stroke:#B0AFB5; fill:none; stroke-width:2.2; stroke-linecap: round; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);}
+         .icnn.act svg { stroke:var(--primary-color); transform: translateY(-3px) scale(1.1);}
+         .icnn.center-btn { transform: translateY(-20px); background: linear-gradient(135deg, var(--primary-color), #FF7696); width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 10px 25px rgba(255, 90, 122, 0.4); border: 4px solid var(--bg-color); transition: 0.3s;}
+         .icnn.center-btn:hover { transform: translateY(-23px) scale(1.05); }
+         .icnn.center-btn svg { stroke: #fff; width: 28px; height: 28px;}
+         body.preg-mode .icnn.center-btn { background: linear-gradient(135deg, #5AA1FF, #76CEFF); box-shadow: 0 10px 25px rgba(90, 161, 255, 0.4); border-color: #F1F8FE;}
+         
+         @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+
+         /* Mascot Styles */
+         .mascot-container { position: fixed; bottom: 110px; right: 15px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: auto; }
+         .mascot-doll { font-size: 65px; animation: float-doll 3s infinite alternate ease-in-out; filter: drop-shadow(0 10px 15px rgba(255, 90, 122, 0.4)); transform-origin: bottom center; background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 60%); border-radius: 50%; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin-right: 5px; cursor: pointer; user-select: none; transition: transform 0.2s; }
+         .mascot-doll:active { transform: scale(0.9); }
+         .mascot-speech { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 12px 18px; border-radius: 20px 20px 0 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-size: 14px; font-weight: 800; color: var(--primary-color); margin-bottom: 5px; max-width: 220px; text-align: right; border: 2px solid var(--primary-color); display: none; transform-origin: bottom right; }
+         @keyframes float-doll { 0% { transform: translateY(0) rotate(-2deg); } 100% { transform: translateY(-15px) rotate(2deg); } }
+         @keyframes speech-pop { 0% { opacity: 0; transform: scale(0.5) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+         @keyframes fadeOut { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.5) translateY(20px); } }
     </style>
 </head>
 <body>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <!-- CUTE MASCOT DOLL -->
+    <div id="mascot-container" class="mascot-container">
+        <div id="mascot-speech" class="mascot-speech">तुम्हारा मैजिकल कैलेंडर तैयार है! 📅✨</div>
+        <div id="mascot-doll" class="mascot-doll" onclick="pokeDoll()">🧚‍♀️</div>
+    </div>
+
     <h1 data-hi="मैजिकल साइकिल कैलेंडर 📅" data-en="Chronicles Planner 📅"></h1>
-    <p style="text-align:center; color:#999; font-weight:600; font-size:14px; margin-top:-10px;" id="uNxG">Wait...</p>
+    <p style="text-align:center; color:#888; font-weight:600; font-size:15px; margin-top:5px;" id="uNxG">Wait...</p>
 
     <div class="calCrd">
          <div class="calTxn">
-             <button class="ctrB" onclick="slDxn(-1)">‹</button> <span id="mtXG" style="font-size:18px; font-weight:800; color:#333">Load...</span> <button class="ctrB" onclick="slDxn(1)">›</button>
+             <button class="ctrB" onclick="slDxn(-1)">‹</button> <span id="mtXG" style="font-size:22px; font-weight:800; color:#222">Load...</span> <button class="ctrB" onclick="slDxn(1)">›</button>
          </div>
-         
          <div class="clmGd" id="mCalPrc"></div>
+         <div class="legend">
+            <div><span class="dot" style="background:var(--primary-color);"></span> <span data-hi="पीरियड" data-en="Period"></span></div>
+            <div><span class="dot" style="background:#FFF0EE; border: 2px dashed var(--primary-color);"></span> <span data-hi="अनुमानित" data-en="Predicted"></span></div>
+         </div>
     </div>
     
-    <div style="text-align:center; padding: 20px;" data-en="Pink represents tracking phases visually generated natively per localized maths on cycle params." data-hi="गुलाबी घेरे या डॉट बताते हैं कि पीरियड लाइव चालू हैं। डायनामिक रूप से यहाँ मैप होगा।">...</div>
+    <div style="text-align:center; padding: 0 30px; font-size: 14px; color: #777; font-weight: 600; line-height: 1.5; animation: slideUpFade 0.8s both; animation-delay: 0.3s;" data-en="Pink dots represent your highly accurate predicted phases calculated locally securely." data-hi="गुलाबी रंग आपके असली और अनुमानित पीरियड्स को बड़ी सटीकता से दर्शाता है।">...</div>
 
-    <div class="nvdBar">
-         <a onclick="location.href='index.html'"><svg class="ic"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
-         <a onclick="location.href='calendar.html'" class="na"><svg class="ic"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></a>
-         <a onclick="location.href='symptoms.html'" style="margin-top:-25px; background:var(--primary-color); padding:10px; border-radius:50%; box-shadow:0 8px 15px rgba(255, 90, 122,0.3);"><svg class="ic" style="stroke:#fff"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
-         <a onclick="location.href='settings.html'"><svg class="ic"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg></a>
+    <div class="navv">
+         <a onclick="location.href='index.html'" class="icnn"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+         <a onclick="location.href='calendar.html'" class="icnn act"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></a>
+         <a onclick="location.href='symptoms.html'" class="icnn center-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
+         <a onclick="location.href='tools.html'" class="icnn"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 17 22 12"></polyline></svg></a>
+         <a onclick="location.href='settings.html'" class="icnn"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg></a>
     </div>
 
-    <!-- Math Independent Block System so file lives isolated powerfully -->
     <script>
         const mmUser=JSON.parse(localStorage.getItem('userData'));
-        let mnCfg=JSON.parse(localStorage.getItem('appConfig'))||{lang:'hi', pregMode:false};
-        
+        let mnCfg=JSON.parse(localStorage.getItem('appConfig'))||{lang:'hi', pregMode:false, alerts:{period:true, water:true, love:true}};
+        if(!mnCfg.alerts) mnCfg.alerts = {period:true, water:true, love:true};
         let cMxx=new Date().getMonth(); let cYrx=new Date().getFullYear();
+
+        // Mascot Helper Functions
+        function pokeDoll() {
+            let mSpeech = document.getElementById('mascot-speech');
+            let quotes = mnCfg.lang=='hi' ?[
+                "मैं तुम्हारे सारे डेट्स याद रखती हूँ! 📅", 
+                "सब कुछ एकदम सही ट्रैक पर है मेरी जान! ✨", 
+                "कैलेंडर चेक कर लिया? अब रिलैक्स करो! 🌸"
+            ] :["I remember all your dates! 📅", "Everything is on track gorgeous! ✨", "Checked the calendar? Now relax! 🌸"];
+            
+            if(mSpeech) {
+                 if(navigator.vibrate) navigator.vibrate(50);
+                 mSpeech.innerText = quotes[Math.floor(Math.random()*quotes.length)];
+                 mSpeech.style.display = 'block';
+                 mSpeech.style.animation = 'none';
+                 setTimeout(() => { mSpeech.style.animation = 'speech-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'; }, 10);
+                 setTimeout(() => { mSpeech.style.animation = 'fadeOut 0.5s forwards'; }, 5000);
+            }
+        }
+        setInterval(() => {
+            let mSpeech = document.getElementById('mascot-speech');
+            if(mSpeech && (mSpeech.style.opacity == 0 || mSpeech.style.display == 'none' || mSpeech.style.animationName === 'fadeOut')) {
+                 pokeDoll();
+            }
+        }, 15000);
+
+        // --- 🧠 SMART JAVA SYNC ---
+        function syncWithAndroid() {
+            if (!window.Android || !window.Android.scheduleSmartAlarm || !mmUser) return;
+            try {
+                let wtState = JSON.parse(localStorage.getItem('waterLog')) || { count: 0 };
+                let freq = localStorage.getItem('lastFreqKey') || "DAILY";
+                if(localStorage.getItem('masterToglStatus') === "NO") freq = "OFF";
+                window.Android.scheduleSmartAlarm(
+                    mmUser.lastDate, mmUser.cycleLength.toString(), freq, 
+                    mnCfg.lang, mmUser.name || "Beautiful", wtState.count,
+                    mnCfg.alerts.period, mnCfg.alerts.water, mnCfg.alerts.love
+                );
+            } catch(e) {}
+        }
 
         function renderDOMX(){
              document.querySelectorAll('[data-'+mnCfg.lang+']').forEach(j=> j.innerHTML = j.getAttribute('data-'+mnCfg.lang) );
-             if(mnCfg.pregMode) document.body.classList.add('preg-mode');
+             if(mnCfg.pregMode) { document.body.classList.add('preg-mode'); document.getElementById('mascot-doll').innerText = "👼"; }
+             setTimeout(pokeDoll, 1000);
         }
         
         function rMthsMathPx(ddzMsxDateToChk){
@@ -65,7 +144,6 @@
              let mStarXx = uxLtMx + (cDiffXx * lgLenXx); 
              let pEd = mStarXx + (parseInt(mmUser.duration-1) * 86400000); 
 
-             // check precise math logic for overlapping period windows natively.
              let pLxxLive = (ddzMsxDateToChk >= mStarXx && ddzMsxDateToChk <= pEd);
              let ePdFwDr = pLxxLive && ddzMsxDateToChk > new Date().setHours(0,0,0,0);
              return { cPd: pLxxLive && !ePdFwDr, cPred: ePdFwDr};
@@ -73,7 +151,7 @@
 
         function dDx(MxP, Yxp){
              let box = document.getElementById('mCalPrc'); box.innerHTML = "";
-             document.getElementById('mtXG').innerText = new Date(Yxp,MxP).toLocaleString(mnCfg.lang=='hi'?'hi-IN':'en-US',{month:'short', year:'numeric'});
+             document.getElementById('mtXG').innerText = new Date(Yxp,MxP).toLocaleString(mnCfg.lang=='hi'?'hi-IN':'en-US',{month:'long', year:'numeric'});
              let dtN=(mnCfg.lang=='hi')?['सोम','मंग','बुध','गुरु','शुक्र','शनि','रवि'] :['Mo','Tu','We','Th','Fr','Sa','Su'];
              dtN.forEach(x=> box.innerHTML += `<div class="gNam">${x}</div>`);
 
@@ -91,11 +169,14 @@
                  box.innerHTML += `<div class="${cdN}">${ixn}</div>`;
              }
         }
-        function slDxn(dxxRk) {
-             cMxx += dxxRk; if(cMxx>11){cMxx=0; cYrx++;} if(cMxx<0){cMxx=11;cYrx--;} dDx(cMxx,cYrx);
-        }
+        function slDxn(dxxRk) { cMxx += dxxRk; if(cMxx>11){cMxx=0; cYrx++;} if(cMxx<0){cMxx=11;cYrx--;} dDx(cMxx,cYrx); }
         
-        window.onload=()=> { renderDOMX(); if(mmUser) document.getElementById('uNxG').innerText=mmUser.name+", Check records"; dDx(cMxx,cYrx);}
+        window.onload=()=> { 
+            renderDOMX(); 
+            if(mmUser) document.getElementById('uNxG').innerText=mmUser.name + ", " + (mnCfg.lang=='hi'?"आपकी डायरी तैयार है!":"Your diary is ready!"); 
+            dDx(cMxx,cYrx); 
+            syncWithAndroid(); 
+        }
     </script>
 </body>
 </html>
