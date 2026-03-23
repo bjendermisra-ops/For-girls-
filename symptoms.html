@@ -2,86 +2,215 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Symptom Daily Note</title>
-    <!-- Explicit styling Injection -->
     <style>
-         :root {--primary-color: #FF5A7A; --bg: #FEF1F6;} body.preg-mode{--primary-color: #5AA1FF; --bg:#F1F8FE;} *{box-sizing: border-box;}
-         body { margin:0; padding:30px 20px 95px 20px; background:var(--bg); font-family:'SF Pro Display', sans-serif;}
-         h2{font-size:26px; color:#222;} .bxb{ color:var(--primary-color);}
-         
-         .lgGrD { display:flex; flex-wrap:wrap; gap:12px; margin: 18px 0 35px 0;}
-         .gpxItem { background: #fff; padding:12px 24px; border-radius:30px; font-weight:700; font-size:15px; border:2px solid transparent; cursor:pointer; color:#7E7E8F; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition:0.3s;}
-         .gpxItem.xcL { background:var(--primary-color); border-color:transparent; color:#fff; transform:translateY(-2px); box-shadow:0 8px 25px rgba(255, 90, 122, 0.4);}
+         :root {
+             --primary-color: #FF5A7A; 
+             --bg: #FEF1F6;
+             --card-bg: rgba(255, 255, 255, 0.95);
+             --text-color: #444;
+         } 
+         /* Dynamic Theme Engine based on Mood/Symptoms */
+         body.theme-cramps { --primary-color: #FF8A65; --bg: #FEF4F1; --text-color: #5C3A21; }
+         body.theme-sad { --primary-color: #9D7AFF; --bg: #F4F1FE; --text-color: #31215C; }
+         body.theme-angry { --primary-color: #FF426A; --bg: #FFF0F3; --text-color: #5C1926; }
+         body.theme-happy { --primary-color: #4ADE80; --bg: #F0FEF6; --text-color: #1A4D2E; }
+         body.preg-mode{--primary-color: #5AA1FF; --bg:#F1F8FE;} 
 
-         .sbmNxKbtn { width:100%; padding:18px; border:none; border-radius: 20px; font-weight: 800; color:white; font-size: 16px; margin-top:10px; transition:0.3s; }
-         .rBgKnxM { background:linear-gradient(135deg, var(--primary-color), #FFA8BA); }
+         *{box-sizing: border-box; -webkit-tap-highlight-color: transparent;}
+         body { margin:0; padding:40px 20px 120px 20px; background:var(--bg); font-family:'SF Pro Display', -apple-system, sans-serif; transition: background 0.8s ease, color 0.5s; overflow-x: hidden; color: var(--text-color);}
+         
+         /* Decorative Dynamic Blobs */
+         .bg-blob { position: fixed; border-radius: 50%; filter: blur(60px); opacity: 0.5; z-index: -1; transition: background 0.8s ease;}
+         .blob-1 { width: 250px; height: 250px; background: var(--primary-color); top: -50px; left: -50px; animation: float-blob 8s infinite alternate ease-in-out, pulse-blob 6s infinite alternate; }
+         .blob-2 { width: 300px; height: 300px; background: rgba(255,255,255,0.8); bottom: 100px; right: -50px; animation: float-blob 10s infinite alternate-reverse ease-in-out; animation-delay: -3s; }
+         @keyframes float-blob { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(40px) scale(1.15); } }
+         @keyframes pulse-blob { 0% { opacity: 0.3; filter: blur(60px); } 100% { opacity: 0.6; filter: blur(40px); } }
+         @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+
+         h2{font-size:28px; font-weight: 900; letter-spacing: -0.5px; margin-top:0; animation: slideUpFade 0.8s both;} 
+         
+         .q-section { animation: slideUpFade 0.8s both; }
+         .q-section:nth-of-type(1) { animation-delay: 0.1s; }
+         .q-section:nth-of-type(2) { animation-delay: 0.2s; }
+         .q-section:nth-of-type(3) { animation-delay: 0.3s; }
+
+         .lgGrD { display:flex; flex-wrap:wrap; gap:12px; margin: 15px 0 35px 0;}
+         .gpxItem { background: var(--card-bg); backdrop-filter: blur(10px); padding:16px 24px; border-radius:25px; font-weight:800; font-size:15px; border:2px solid rgba(255,255,255,0.6); cursor:pointer; color:#666; box-shadow: 0 5px 15px rgba(0,0,0,0.02); transition:0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items:center; gap: 8px;}
+         .gpxItem:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+         .gpxItem.xcL { background:var(--primary-color); border-color:var(--primary-color); color:#fff; transform:translateY(-3px) scale(1.02); box-shadow:0 10px 30px rgba(0,0,0,0.15);}
+         
+         .sbmNxKbtn { width:100%; padding:22px; border:none; border-radius: 30px; font-weight: 800; color:white; font-size: 16px; margin-top:20px; transition:0.3s; cursor:pointer; box-shadow: 0 10px 35px rgba(0,0,0,0.15); animation: slideUpFade 0.8s both; animation-delay: 0.4s; letter-spacing: 0.5px;} 
+         .sbmNxKbtn:active{transform: scale(0.96);}
+         .rBgKnxM { background:var(--primary-color); }
+         
          body.preg-mode .gpxItem.xcL {background:var(--primary-color); box-shadow:0 8px 25px rgba(90, 161, 255, 0.4);}
+         body.preg-mode .rBgKnxM {background:linear-gradient(135deg, #5AA1FF, #76CEFF); box-shadow: 0 10px 30px rgba(90, 161, 255, 0.3);}
          
-         /* Pop up Engine Native UX Code Flow Inject! */
-         .succModxx { position:fixed; display:none; inset:0; align-items:center; justify-content:center; background:rgba(255, 255, 255,0.8); backdrop-filter:blur(8px); z-index:999; text-align:center;} 
-         .mNxxbxIck { background:#fff; padding:35px 40px; border-radius:35px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); } .xnxK { font-size:48px;}
+         .succModxx { position:fixed; display:none; inset:0; align-items:center; justify-content:center; background:rgba(0, 0, 0,0.6); backdrop-filter:blur(10px); z-index:99999; text-align:center; animation: fade 0.3s;} 
+         .mNxxbxIck { background:#fff; width: 85%; max-width: 350px; padding:40px 30px; border-radius:40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); transform: scale(0.9); animation: popIn 0.4s forwards cubic-bezier(0.3, 1.5, 0.4, 1);} 
+         .xnxK { font-size:55px; margin-bottom: 10px; display:inline-block; background: var(--bg); color: var(--primary-color); width: 100px; height: 100px; line-height: 100px; border-radius: 50%; box-shadow: 0 10px 25px rgba(0,0,0,0.05);}
+         
+         .navv { position:fixed; bottom: 20px; left: 20px; right: 20px; height: 75px; display:flex; justify-content:space-around; align-items:center; background:rgba(255,255,255,0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index:9999; border-radius: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.5);}
+         .icnn { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; width: 60px; height: 100%; cursor: pointer;}
+         .icnn svg { width:26px; height:26px; stroke:#B0AFB5; fill:none; stroke-width:2.2; stroke-linecap: round; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);}
+         .icnn.act svg { stroke:var(--primary-color); transform: translateY(-3px) scale(1.1);}
+         .icnn.center-btn { transform: translateY(-20px); background: var(--primary-color); width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 4px solid var(--bg); transition: 0.3s;}
+         .icnn.center-btn:hover { transform: translateY(-23px) scale(1.05); }
+         .icnn.center-btn svg { stroke: #fff; width: 28px; height: 28px;}
+         body.preg-mode .icnn.center-btn { background: linear-gradient(135deg, #5AA1FF, #76CEFF); box-shadow: 0 10px 25px rgba(90, 161, 255, 0.4); border-color: #F1F8FE;}
+         @keyframes fade {from {opacity:0} to {opacity:1}}
+         @keyframes popIn {to {transform: scale(1)}}
 
-         /* Bar bottom system Native injected strictly identically isolated! */
-         .nvdBar {position:fixed; bottom:0; left:0; right:0; background:#fff; height:80px; display:flex; justify-content:space-evenly; z-index:9999; align-items:center; border-top-left-radius:30px; border-top-right-radius:30px;}
-         .ic {width:30px; fill:none; stroke:#ccc; stroke-width:2;} .na .ic {stroke:var(--primary-color);}
+         /* Mascot Styles */
+         .mascot-container { position: fixed; bottom: 110px; right: 15px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: auto; }
+         .mascot-doll { font-size: 65px; animation: float-doll 3s infinite alternate ease-in-out; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); transform-origin: bottom center; background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 60%); border-radius: 50%; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin-right: 5px; cursor: pointer; user-select: none; transition: transform 0.2s; }
+         .mascot-doll:active { transform: scale(0.9); }
+         .mascot-speech { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 12px 18px; border-radius: 20px 20px 0 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-size: 14px; font-weight: 800; color: var(--primary-color); margin-bottom: 5px; max-width: 220px; text-align: right; border: 2px solid var(--primary-color); display: none; transform-origin: bottom right; }
     </style>
 </head>
 <body>
-    <h2 data-en="Body Map Tracker 🤍" data-hi="आज आप कैसा महसूस कर रही हैं?🤍"></h2>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <!-- CUTE MASCOT DOLL -->
+    <div id="mascot-container" class="mascot-container">
+        <div id="mascot-speech" class="mascot-speech">मुझसे कुछ मत छुपाना मेरी प्यारी! 🌸</div>
+        <div id="mascot-doll" class="mascot-doll" onclick="pokeDoll()">🧚‍♀️</div>
+    </div>
+
+    <h2 data-en="Share with me, gorgeous 🤍" data-hi="आज आप कैसा महसूस कर रही हैं? 🤍"></h2>
     
-    <div style="font-weight:700; margin-top:25px;" data-en="🩸 Menstruation bleeding phase status." data-hi="🩸 खून का बहाव कितना (Flow volume)?">Flow Type</div>
-    <div class="lgGrD">
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Normal/Mild</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Heavy Rush</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Spotting Only</div>
-    </div>
-
-    <div style="font-weight:700;" data-en="🥺 What Physical pain do you face right now? " data-hi="🥺 आपके शरीर में कहां परेशानी हो रही है?">Symptoms Signs</div>
-    <div class="lgGrD">
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Stomach Cramps (ऐंठन)</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Waist / Lower Back कमर</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Heaviness (भारीपन)</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Mild Headache / Stress</div>
-    </div>
-    
-    <div style="font-weight:700;" data-hi="🎭 मानसिक तनाव और भावनाएं" data-en="🎭 Emotional Stability state">Mind state</div>
-    <div class="lgGrD">
-        <div class="gpxItem" onclick="tkNxAxcC(this)">A bit crying sad 😔</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Easily Annoyed 😡</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Relaxed happy state 😇</div>
-        <div class="gpxItem" onclick="tkNxAxcC(this)">Extreme weak Fatigue😴</div>
-    </div>
-
-    <button class="sbmNxKbtn rBgKnxM" onclick="xLogKkkMsxC(this)" data-en="SAVE TODAY'S NOTE LOG 🗃️" data-hi="अपनी हालत को लॉग / सहेजें 🗃️"></button>
-
-    <div class="succModxx" id="succPxMnGkQc">
-        <div class="mNxxbxIck">
-           <div class="xnxK">🌿</div><h2 data-en="Record Appended Beautiful!" data-hi="डाटा सेव हुआ!"></h2><p style="font-weight:700; color:var(--primary-color);" data-en="Be very patient with your healing body ✨" data-hi="आपका शरीर हिम्मत का रूप है, हार न माने✨"></p>
+    <div class="q-section">
+        <div style="font-weight:900; margin-top:30px; font-size:16px;" data-en="🩸 Menstruation bleeding flow" data-hi="🩸 आज फ्लो कैसा है मेरी जान?">Flow Type</div>
+        <div style="font-size:13px; font-weight: 600; opacity: 0.6; margin-bottom: 10px;" data-hi="सच सच बताना..." data-en="Be honest with me..."></div>
+        <div class="lgGrD">
+            <div class="gpxItem" onclick="tkNxAxcC(this, 'normal')" data-hi="नॉर्मल / हल्का फ्लो" data-en="Normal/Mild">Normal/Mild</div>
+            <div class="gpxItem" onclick="tkNxAxcC(this, 'heavy')" data-hi="बहुत भारी (Heavy Flow)" data-en="Heavy Rush">Heavy Rush</div>
+            <div class="gpxItem" onclick="tkNxAxcC(this, 'spotting')" data-hi="सिर्फ स्पॉटिंग (Spotting)" data-en="Spotting Only">Spotting Only</div>
         </div>
     </div>
 
-    <div class="nvdBar">
-         <a onclick="location.href='index.html'"><svg class="ic"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
-         <a onclick="location.href='calendar.html'"><svg class="ic"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg></a>
-         <a onclick="location.href='symptoms.html'" class="na" style="margin-top:-25px; background:var(--primary-color); padding:10px; border-radius:50%; box-shadow:0 8px 15px rgba(255, 90, 122,0.3);"><svg class="ic" style="stroke:#fff"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
-         <a onclick="location.href='settings.html'"><svg class="ic"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line></svg></a>
+    <div class="q-section">
+        <div style="font-weight:900; font-size:16px;" data-en="🥺 Physical pain points" data-hi="🥺 शरीर का कौन सा हिस्सा प्यार मांग रहा है?">Symptoms Signs</div>
+        <div style="font-size:13px; font-weight: 600; opacity: 0.6; margin-bottom: 10px;" data-hi="कहाँ तकलीफ हो रही है?" data-en="Where does it hurt?"></div>
+        <div class="lgGrD">
+            <div class="gpxItem chck-symp" data-type="cramp" onclick="tkNxAxcC(this, 'cramps')" data-hi="पेट में ऐंठन (Cramps) ⚡" data-en="Stomach Cramps ⚡">Stomach Cramps ⚡</div>
+            <div class="gpxItem chck-symp" data-type="back" onclick="tkNxAxcC(this, 'cramps')" data-hi="कमर में दर्द 😣" data-en="Lower Back Pain">Lower Back Pain 😣</div>
+            <div class="gpxItem" onclick="tkNxAxcC(this, 'bloated')" data-hi="भारीपन / ब्लोटिंग 🎈" data-en="Heaviness / Bloated 🎈">Heaviness / Bloated 🎈</div>
+            <div class="gpxItem" onclick="tkNxAxcC(this, 'headache')" data-hi="सिरदर्द / थकावट 🤕" data-en="Headache / Stress 🤕">Headache / Stress 🤕</div>
+        </div>
+    </div>
+    
+    <div class="q-section">
+        <div style="font-weight:900; font-size:16px;" data-hi="🎭 मन कैसा है तुम्हारा?" data-en="🎭 Emotional state">Mind state</div>
+        <div style="font-size:13px; font-weight: 600; opacity: 0.6; margin-bottom: 10px;" data-hi="बिना डरे शेयर करो..." data-en="Share without hesitation..."></div>
+        <div class="lgGrD">
+            <div class="gpxItem chck-symp" data-type="sad" onclick="tkNxAxcC(this, 'sad')" data-hi="रोना आ रहा है / उदास 😔" data-en="Feeling Sad/Crying 😔">Feeling Sad/Crying 😔</div>
+            <div class="gpxItem chck-symp" data-type="angry" onclick="tkNxAxcC(this, 'angry')" data-hi="गुस्सा और चिड़चिड़ापन 😡" data-en="Easily Annoyed 😡">Easily Annoyed 😡</div>
+            <div class="gpxItem chck-symp" data-type="happy" onclick="tkNxAxcC(this, 'happy')" data-hi="एकदम खुश और रिलैक्स 😇" data-en="Relaxed & Happy 😇">Relaxed & Happy 😇</div>
+            <div class="gpxItem" onclick="tkNxAxcC(this, 'tired')" data-hi="बहुत कमज़ोरी लग रही 😴" data-en="Extreme Fatigue 😴">Extreme Fatigue 😴</div>
+        </div>
+    </div>
+
+    <button class="sbmNxKbtn rBgKnxM" onclick="xLogKkkMsxC(this)" data-en="SAFEGUARD MY DIARY 🗃️" data-hi="मेरी डायरी में संभाल कर रखें 🗃️"></button>
+
+    <div class="succModxx" id="succPxMnGkQc">
+        <div class="mNxxbxIck">
+           <div class="xnxK">🌿</div>
+           <h2 data-en="Saved Beautifully!" data-hi="सेव हो गया!" style="margin: 0 0 10px; color:var(--text-color);"></h2>
+           <p style="font-weight:800; opacity:0.8; font-size: 16px; line-height: 1.5;" id="dynamicRemedyMsg" data-en="Your body is doing a lot of hard work. Keep a hot water bag ready and take some rest ✨" data-hi="आपका शरीर हिम्मत का रूप है। थोड़ा आराम करें और गर्म चाय या पानी पिएं। हम आपके साथ हैं! ✨"></p>
+        </div>
+    </div>
+
+    <div class="navv">
+         <a onclick="location.href='index.html'" class="icnn"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+         <a onclick="location.href='calendar.html'" class="icnn"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></a>
+         <a onclick="location.href='symptoms.html'" class="icnn center-btn act"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
+         <a onclick="location.href='tools.html'" class="icnn"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></a>
+         <a onclick="location.href='settings.html'" class="icnn"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg></a>
     </div>
 
     <script>
-        let mnCfg = JSON.parse(localStorage.getItem('appConfig'))||{lang:'hi', pregMode:false};
+        let mnCfg = JSON.parse(localStorage.getItem('appConfig'))||{lang:'hi', pregMode:false, alerts:{period:true, water:true, love:true}};
+        let amData = JSON.parse(localStorage.getItem('userData'));
+        if(!mnCfg.alerts) mnCfg.alerts = {period:true, water:true, love:true};
         if(mnCfg.pregMode) document.body.classList.add('preg-mode');
 
-        document.querySelectorAll('[data-'+mnCfg.lang+']').forEach(a=>{a.innerText = a.getAttribute('data-'+mnCfg.lang);});
-
-        // Deep UX engagement animations natively
-        function tkNxAxcC(vxE_LckCmsxLncHnkNkxwE1){ vxE_LckCmsxLncHnkNkxwE1.classList.toggle('xcL'); }
-
-        // Live Appended Saves mock behavior successfully isolating dependencies 
-        function xLogKkkMsxC(xcMkcxqBc1C){
-             document.getElementById('succPxMnGkQc').style.display = "flex";
-             setTimeout(()=> { document.getElementById('succPxMnGkQc').style.display="none"; }, 4000);
+        // Mascot Helper Functions
+        function pokeDoll(customTxt) {
+            let mSpeech = document.getElementById('mascot-speech');
+            if(customTxt) mSpeech.innerText = customTxt;
+            else mSpeech.innerText = mnCfg.lang=='hi' ? "कैसा लग रहा है आज? 🥺" : "How do you feel today? 🥺";
+            
+            if(mSpeech) {
+                 if(navigator.vibrate) navigator.vibrate(50);
+                 mSpeech.style.display = 'block';
+                 mSpeech.style.animation = 'none';
+                 setTimeout(() => { mSpeech.style.animation = 'speech-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'; }, 10);
+                 setTimeout(() => { mSpeech.style.animation = 'fadeOut 0.5s forwards'; }, 5000);
+            }
         }
+
+        // --- 🧠 SMART JAVA SYNC ---
+        function syncWithAndroid() {
+            if (!window.Android || !window.Android.scheduleSmartAlarm || !amData) return;
+            try {
+                let wtState = JSON.parse(localStorage.getItem('waterLog')) || { count: 0 };
+                let freq = localStorage.getItem('lastFreqKey') || "DAILY";
+                if(localStorage.getItem('masterToglStatus') === "NO") freq = "OFF";
+                window.Android.scheduleSmartAlarm(
+                    amData.lastDate, amData.cycleLength.toString(), freq, 
+                    mnCfg.lang, amData.name || "Beautiful", wtState.count,
+                    mnCfg.alerts.period, mnCfg.alerts.water, mnCfg.alerts.love
+                );
+            } catch(e) {}
+        }
+
+        document.querySelectorAll('[data-'+mnCfg.lang+']').forEach(a=>{ a.innerText = a.getAttribute('data-'+mnCfg.lang); });
+        
+        // Dynamic Theme Logic 
+        function tkNxAxcC(vxE, themeKey){ 
+            vxE.classList.toggle('xcL'); 
+            
+            // Re-evaluate current theme based on selected elements
+            let activeEl = document.querySelectorAll('.gpxItem.xcL');
+            document.body.className = ''; // reset classes
+            if(mnCfg.pregMode) document.body.classList.add('preg-mode');
+
+            if(activeEl.length > 0 && !mnCfg.pregMode) {
+                // Latest clicked defines the primary theme vibe if not preg mode
+                if(vxE.classList.contains('xcL')) {
+                    if(themeKey === 'cramps') { document.body.classList.add('theme-cramps'); pokeDoll(mnCfg.lang=='hi'?"उफ्फ दर्द! हीटिंग पैड लाऊं? ♨️":"Ouch! Should I get a heating pad? ♨️"); document.getElementById('mascot-doll').innerText="😣";}
+                    else if(themeKey === 'sad') { document.body.classList.add('theme-sad'); pokeDoll(mnCfg.lang=='hi'?"मेरी जान, रोना आए तो रो लो... मैं हूँ ना 🥺":"It's okay to cry, I am right here 🥺"); document.getElementById('mascot-doll').innerText="🫂";}
+                    else if(themeKey === 'angry') { document.body.classList.add('theme-angry'); pokeDoll(mnCfg.lang=='hi'?"गुस्सा आ रहा है ना? चॉकलेट खा लो! 🍫":"Feeling angry? Have some chocolate! 🍫"); document.getElementById('mascot-doll').innerText="😤";}
+                    else if(themeKey === 'happy') { document.body.classList.add('theme-happy'); pokeDoll(mnCfg.lang=='hi'?"वाओ! तुम्हारी स्माइल बहुत प्यारी है 🥰":"Wow! Keep smiling gorgeous 🥰"); document.getElementById('mascot-doll').innerText="😇";}
+                    else if(themeKey === 'heavy') { document.body.classList.add('theme-angry'); pokeDoll(mnCfg.lang=='hi'?"अपना बहुत ध्यान रखना, गरम पानी पियो ☕":"Take good care, drink warm water ☕"); document.getElementById('mascot-doll').innerText="🥺";}
+                }
+            } else {
+                document.getElementById('mascot-doll').innerText = mnCfg.pregMode ? "👼" : "🧚‍♀️";
+            }
+        }
+
+        function xLogKkkMsxC(xcMkcxqBc1C){
+             let hasCramp = document.querySelector('.chck-symp[data-type="cramp"]').classList.contains('xcL') || document.querySelector('.chck-symp[data-type="back"]').classList.contains('xcL');
+             let hasSad = document.querySelector('.chck-symp[data-type="sad"]').classList.contains('xcL');
+             let hasAngry = document.querySelector('.chck-symp[data-type="angry"]').classList.contains('xcL');
+             
+             let msgBx = document.getElementById('dynamicRemedyMsg');
+             
+             if(hasCramp) msgBx.innerText = mnCfg.lang=='hi' ? "शरीर बहुत दर्द सह रहा है मेरी जान। तुरंत हीटिंग पैड का उपयोग करें और गरम चाय पिएं। हम आपके साथ हैं! ♨️" : "Your body is in pain, honey. Use a heating pad and sip warm tea. We are with you! ♨️";
+             else if(hasSad) msgBx.innerText = mnCfg.lang=='hi' ? "रोना आए तो रो लें, यह हॉर्मोन्स का खेल है। अपने फेवरेट गाने सुनें, आप बहुत प्यारी हैं! 💖" : "It's just the hormones playing tricks. Listen to your favorite songs, you are incredibly loved! 💖";
+             else if(hasAngry) msgBx.innerText = mnCfg.lang=='hi' ? "गहरी साँस लो! डार्क चॉकलेट खाओ, यह गुस्सा पल भर का है। सब ठीक हो जाएगा! 🍫" : "Take a deep breath! Have some dark chocolate, this anger will pass soon. 🍫";
+             else msgBx.innerText = mnCfg.lang=='hi' ? "आपकी डायरी अपडेट हो गई! अपना ख्याल रखना, आराम करना और खुद से प्यार करना मत भूलना ✨" : "Your diary is updated! Keep shining, rest well, and love yourself ✨";
+
+             document.getElementById('succPxMnGkQc').style.display = "flex";
+             syncWithAndroid(); 
+             setTimeout(()=> { document.getElementById('succPxMnGkQc').style.display="none"; }, 4500); 
+        }
+
+        window.onload = () => { syncWithAndroid(); setTimeout(()=>pokeDoll(), 1500); }
     </script>
 </body>
 </html>
