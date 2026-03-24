@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hormone Health Checker</title>
+    <style>
+        :root{--p:#FF5A7A;--bg:#FEF1F6;--c:#fff;--t:#333}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#FFD1E3;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(255,90,122,.1);animation:slideUp .5s}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .chk-box{display:flex;align-items:center;gap:10px;background:#F8F9FA;padding:15px;border-radius:15px;margin-bottom:10px;font-weight:bold;color:#555;font-size:14px}
+        input[type="checkbox"]{width:20px;height:20px;accent-color:var(--p)}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#FF7696);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;margin-top:10px;cursor:pointer;box-shadow:0 5px 15px rgba(255,90,122,.3)}
+        .res{display:none;background:#FFF0F3;border:2px dashed var(--p);padding:20px;border-radius:20px;margin-top:20px;text-align:center;font-weight:bold;animation:pop .4s}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('हार्मोन्स ही तो हमें स्पेशल बनाते हैं! 💖')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Hormone Health</h2>
+    </div>
+
+    <div class="card">
+        <p style="color:#666;font-weight:bold;margin-top:0;">What are you feeling today?</p>
+        <label class="chk-box"><input type="checkbox" class="cb"> Extreme Mood Swings</label>
+        <label class="chk-box"><input type="checkbox" class="cb"> Tender Breasts</label>
+        <label class="chk-box"><input type="checkbox" class="cb"> Unexplained Fatigue</label>
+        <label class="chk-box"><input type="checkbox" class="cb"> Sugar or Salt Cravings</label>
+        
+        <button class="btn" onclick="check()">Analyze Hormones 🧬</button>
+        <div class="res" id="res"></div>
+    </div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function check(){
+            let checks = document.querySelectorAll('.cb:checked').length;
+            let res = document.getElementById('res');
+            res.style.display="block";
+
+            if (checks >= 3) {
+                res.innerHTML = "Your Estrogen/Progesterone levels are fluctuating. Very common during the Luteal (PMS) phase. Relax and eat dark chocolate! 🍫";
+                showM("गुस्सा आए तो लंबी सांस लेना! 🧘‍♀️");
+            } else if (checks >= 1) {
+                res.innerHTML = "Mild hormonal shifts detected. Stay hydrated and get proper sleep. 💤";
+                showM("पानी पियो और आराम करो! 💧");
+            } else {
+                res.innerHTML = "Your hormones seem perfectly balanced today! Enjoy your energy. ✨";
+                showM("आज तो तुम चमक रही हो! 🌟");
+            }
+        }
+        setTimeout(()=>showM("मूड स्विंग हो रहा है क्या? 🥺"), 500);
+    </script>
+</body>
+</html>
