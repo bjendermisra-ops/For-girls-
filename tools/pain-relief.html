@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pain Relief Guide</title>
+    <style>
+        :root{--p:#FF426A;--bg:#FFF0F3;--c:#fff;--t:#5C1926}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#FF8A65;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(255,66,106,.15);animation:slideUp .5s; text-align:center;}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        input[type="range"]{width:100%;accent-color:var(--p);margin:20px 0;}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#FF8A65);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 5px 15px rgba(255,66,106,.3)}
+        .res{display:none;background:#FFF0F3;border:2px dashed var(--p);padding:20px;border-radius:20px;margin-top:20px;text-align:left;font-weight:bold;animation:pop .4s}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('मैं तुम्हारे दर्द को समझती हूँ 🥺')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Pain Relief Guide</h2>
+    </div>
+
+    <div class="card">
+        <h3>Pain Intensity Level</h3>
+        <h1 id="pVal" style="font-size:50px;color:var(--p);margin:0">5</h1>
+        <input type="range" id="slider" min="1" max="10" value="5" oninput="updateVal()">
+        <button class="btn" onclick="calc()">Get Instant Relief Plan ♨️</button>
+        <div class="res" id="res"></div>
+    </div>
+
+    <script>
+        function updateVal(){ document.getElementById('pVal').innerText = document.getElementById('slider').value; }
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function calc(){
+            let v = parseInt(document.getElementById('slider').value);
+            let res = document.getElementById('res');
+            res.style.display="block";
+
+            if (v >= 8) {
+                res.innerHTML = "🚨 <b>Severe Pain:</b> If you are vomiting or fainting, go to the ER immediately! Otherwise, take an OTC painkiller (like Ibuprofen) and use a very hot water bag. Lay in fetal position.";
+                showM("प्लीज़ डॉक्टर को कॉल कर लो! 🥺");
+            } else if (v >= 5) {
+                res.innerHTML = "♨️ <b>Moderate Pain:</b> Apply a heating pad to your lower abdomen. Drink hot ginger or chamomile tea. Do the Child's pose yoga stretch.";
+                showM("गरम पानी की बोतल लगा लो, आराम मिलेगा! 🌿");
+            } else {
+                res.innerHTML = "🍃 <b>Mild Pain:</b> Drink plenty of water, eat a banana or dark chocolate, and take a light walk to increase blood flow.";
+                showM("डार्क चॉकलेट खा लो! 🍫");
+            }
+        }
+        setTimeout(()=>showM("कितना दर्द हो रहा है? 1 से 10 के बीच बताओ! 😣"), 500);
+    </script>
+</body>
+</html>
