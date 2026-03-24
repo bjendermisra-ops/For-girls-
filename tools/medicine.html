@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Medicine Reminder</title>
+    <style>
+        :root{--p:#FF8A65;--bg:#FEF4F1;--c:#fff;--t:#5C3A21}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#FFAB91;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(255,138,101,.15);animation:slideUp .5s;}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        input{width:100%;padding:15px;border:2px solid #eee;border-radius:15px;font-size:16px;outline:none;box-sizing:border-box;margin-bottom:10px}
+        input:focus{border-color:var(--p)}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#FFAB91);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;margin-top:10px;cursor:pointer;box-shadow:0 5px 15px rgba(255,138,101,.3)}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+        .pill-card{background:#F8F9FA;padding:15px;border-radius:15px;margin-top:15px;display:flex;justify-content:space-between;align-items:center;border-left:5px solid var(--p)}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('दवाई टाइम पे लेना बहुत ज़रूरी है! 💊')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Pill Reminder</h2>
+    </div>
+
+    <div class="card">
+        <input type="text" id="pname" placeholder="Medicine Name (e.g. Iron Pill)">
+        <input type="time" id="ptime">
+        <button class="btn" onclick="save()">Add Reminder ⏰</button>
+    </div>
+
+    <div id="list"></div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function load(){
+            let pills = JSON.parse(localStorage.getItem('pills')) ||[];
+            let html = "";
+            pills.forEach((p, i) => {
+                html += `<div class="pill-card">
+                    <div><b>${p.n}</b><br><small style="color:#888">${p.t}</small></div>
+                    <span style="color:#FF426A;font-weight:bold;cursor:pointer" onclick="del(${i})">✕</span>
+                </div>`;
+            });
+            document.getElementById('list').innerHTML = html;
+        }
+        function save(){
+            let n = document.getElementById('pname').value;
+            let t = document.getElementById('ptime').value;
+            if(!n || !t) return showM("नाम और टाइम दोनों बताओ! 🥺");
+            let pills = JSON.parse(localStorage.getItem('pills')) ||[];
+            pills.push({n,t});
+            localStorage.setItem('pills', JSON.stringify(pills));
+            showM("दवाई सेट हो गई! मैं याद दिला दूंगी! 💊");
+            document.getElementById('pname').value = "";
+            load();
+        }
+        function del(i){
+            let pills = JSON.parse(localStorage.getItem('pills')) ||[];
+            pills.splice(i, 1);
+            localStorage.setItem('pills', JSON.stringify(pills));
+            showM("डिलीट कर दिया! 🗑️");
+            load();
+        }
+        load();
+        setTimeout(()=>showM("कोई गोली लेनी है क्या आज? 💊"), 500);
+    </script>
+</body>
+</html>
