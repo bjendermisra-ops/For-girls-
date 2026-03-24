@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Glow Wellness Tracker - Your BFF 💖</title>
+    <style>
+        :root {
+            --bg-color: #FEF1F6;
+            --primary-color: #FF5A7A;
+            --primary-grad: linear-gradient(135deg, #FF5A7A, #FF7696);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #2B2B32;
+            --text-muted: #8E8D93;
+            --shadow-soft: 0 15px 40px rgba(255, 90, 122, 0.08);
+            --shadow-hover: 0 20px 50px rgba(255, 90, 122, 0.15);
+            --modal-bg: rgba(0,0,0,0.5);
+            --border-radius-lg: 35px;
+        }
+
+        /* NEW THEMES */
+        body.theme-lavender {
+            --bg-color: #F4F1FE;
+            --primary-color: #9D7AFF;
+            --primary-grad: linear-gradient(135deg, #9D7AFF, #BCA1FF);
+            --shadow-soft: 0 15px 40px rgba(157, 122, 255, 0.15);
+            --shadow-hover: 0 20px 50px rgba(157, 122, 255, 0.25);
+        }
+        body.theme-mint {
+            --bg-color: #F0FEF6;
+            --primary-color: #4ADE80;
+            --primary-grad: linear-gradient(135deg, #4ADE80, #86EFAC);
+            --shadow-soft: 0 15px 40px rgba(74, 222, 128, 0.15);
+            --shadow-hover: 0 20px 50px rgba(74, 222, 128, 0.25);
+        }
+        body.theme-peach {
+            --bg-color: #FEF4F1;
+            --primary-color: #FF8A65;
+            --primary-grad: linear-gradient(135deg, #FF8A65, #FFAB91);
+            --shadow-soft: 0 15px 40px rgba(255, 138, 101, 0.15);
+            --shadow-hover: 0 20px 50px rgba(255, 138, 101, 0.25);
+        }
+
+        body.preg-mode {
+            --bg-color: #F1F8FE;
+            --primary-color: #5AA1FF;
+            --primary-grad: linear-gradient(135deg, #5AA1FF, #76CEFF);
+            --shadow-soft: 0 15px 40px rgba(90, 161, 255, 0.1);
+            --shadow-hover: 0 20px 50px rgba(90, 161, 255, 0.2);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0 0 calc(120px + env(safe-area-inset-bottom)) 0; background: var(--bg-color); font-family: 'SF Pro Display', -apple-system, sans-serif; color: var(--text-dark); transition: background 0.5s ease; overflow-x: hidden;}
+        
+        /* Decorative Background Elements & Animations */
+        .bg-blob { position: fixed; border-radius: 50%; filter: blur(60px); opacity: 0.5; z-index: -1; }
+        .blob-1 { width: 200px; height: 200px; background: var(--primary-color); top: -50px; left: -50px; animation: float-blob 8s infinite alternate ease-in-out, pulse-blob 6s infinite alternate; }
+        .blob-2 { width: 250px; height: 250px; background: #FFD1E3; bottom: 100px; right: -50px; animation: float-blob 10s infinite alternate-reverse ease-in-out, pulse-blob 7s infinite alternate; animation-delay: -3s; }
+        
+        @keyframes float-blob {
+            0% { transform: translateY(0) scale(1) rotate(0deg); }
+            100% { transform: translateY(40px) scale(1.15) rotate(15deg); }
+        }
+        @keyframes pulse-blob {
+            0% { opacity: 0.4; filter: blur(60px); }
+            100% { opacity: 0.7; filter: blur(40px); }
+        }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
+
+        /* Magic Particles / Sparkles CSS */
+        .magic-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999999;
+            animation: particle-fly 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            font-size: 20px;
+        }
+
+        @keyframes particle-fly {
+            0% { opacity: 1; transform: translate(0, 0) scale(0.5); }
+            50% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1.2); }
+            100% { opacity: 0; transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) * 1.5)) scale(0.8); }
+        }
+
+        /* Card Initial Animations */
+        .card { background: var(--card-bg); margin: 0 20px 20px; border-radius: var(--border-radius-lg); padding: 30px 24px; box-shadow: var(--shadow-soft); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(15px); animation: slideUpFade 0.8s cubic-bezier(0.1, 1, 0.3, 1) both;}
+        
+        /* Staggered card animations */
+        #dashBoardGate .card:nth-of-type(1) { animation-delay: 0.1s; }
+        #dashBoardGate .card:nth-of-type(2) { animation-delay: 0.2s; }
+        #dashBoardGate .card-dual { animation: slideUpFade 0.8s cubic-bezier(0.1, 1, 0.3, 1) both; animation-delay: 0.3s; }
+        #dashBoardGate .card:nth-of-type(3) { animation-delay: 0.4s; }
+
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(40px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        input, select, textarea { width: 100%; padding: 16px 20px; margin-bottom: 20px; border: 1.5px solid #EAEAEA; border-radius: 20px; font-size: 16px; background: #F8F9FA; color: var(--text-dark); outline:none; font-weight: 600; transition: all 0.3s ease;}
+        textarea { resize: none; height: 100px; font-family: inherit; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-color); background: #fff; box-shadow: 0 0 20px rgba(255, 90, 122, 0.15); transform: translateY(-2px);}
+        
+        .btn { width: 100%; background: var(--primary-grad); color: white; padding: 18px; border: none; border-radius: 22px; font-weight: 800; font-size: 16px; cursor:pointer; margin-top:10px; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 8px 25px rgba(255, 90, 122, 0.35);}
+        .btn:active { transform: scale(0.94) translateY(2px); box-shadow: 0 4px 10px rgba(255, 90, 122, 0.2);}
+        body.preg-mode .btn {box-shadow: 0 8px 25px rgba(90, 161, 255, 0.35);}
+        
+        .top-hero { padding: calc(45px + env(safe-area-inset-top)) 24px 10px 24px; animation: slideUpFade 0.8s both; }
+        .greet { font-size: 28px; font-weight: 800; margin:0; line-height: 1.2; letter-spacing: -0.5px;}
+        
+        .timer-box { margin-top: 15px; display:inline-block; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); padding:12px 24px; border-radius:24px; border:1px solid rgba(255,255,255,0.6); display: flex; align-items:center; gap: 12px; max-width: 90%; margin-left: auto; margin-right: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.04); animation: slideUpFade 0.8s both; animation-delay: 0.2s;}
+        .t-chunk { font-size: 22px; font-weight: 800; color: var(--primary-color); display:flex; flex-direction:column; align-items:center; min-width:35px; }
+        .t-label { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-top: 2px;}
+        .sep { font-weight: 800; color:var(--text-muted); padding-bottom:15px; font-size: 18px;}
+
+        .circ-wrap { display: flex; justify-content: center; position: relative; margin: 10px 0 25px; animation: slideUpFade 0.8s both; animation-delay: 0.1s;}
+        .circ-progress { position:relative; width: 280px; height: 280px; display:flex; justify-content:center; align-items:center; }
+        .circ-bg, .circ-ring { stroke-width: 16; fill: none; r: 120; cx: 140; cy: 140;}
+        .circ-bg { stroke: rgba(255,255,255,0.6); box-shadow: var(--shadow-soft);}
+        .circ-ring { stroke: url(#dynamicGrad); stroke-linecap: round; stroke-dasharray: 754; stroke-dashoffset: 754; transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1); transform: rotate(-90deg); transform-origin: 50% 50%; filter: drop-shadow(0 0 10px var(--primary-color));}
+        
+        .inner-plate { width: 235px; height: 235px; background: #fff; border-radius: 50%; box-shadow: 0 10px 35px rgba(0,0,0,0.06); position:absolute; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 6px solid var(--bg-color); animation: pulse-heartbeat 3s infinite ease-in-out;}
+        body.preg-mode .inner-plate { border-color: #F1F8FE;}
+        
+        @keyframes pulse-heartbeat {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 35px rgba(0,0,0,0.06); }
+            50% { transform: scale(1.03); box-shadow: 0 15px 45px rgba(0,0,0,0.1); }
+        }
+
+        .main-huge { font-size: 75px; font-weight: 800; line-height: 1; letter-spacing: -3px; color: var(--text-dark); text-shadow: 2px 4px 10px rgba(0,0,0,0.03);}
+        .p-stat { color:#fff; background: var(--primary-grad); padding:8px 22px; border-radius: 20px; font-weight: 800; font-size:13px; margin-bottom:8px; box-shadow: 0 4px 12px rgba(255, 90, 122, 0.4); text-align: center; letter-spacing: 0.5px;}
+
+        .card-dual { display: grid; grid-template-columns: 1fr 1fr; gap:15px; margin: 0 20px; }
+        .edit-icn { cursor:pointer; width:36px; height:36px; background:var(--primary-color); color:white; border-radius:12px; display:flex; align-items:center; justify-content:center; opacity: 0.9; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);} 
+        .edit-icn:active{ transform:scale(0.85); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); }
+
+        .navbar-base { position:fixed; bottom: calc(20px + env(safe-area-inset-bottom)); left: 20px; right: 20px; height: 75px; display:flex; justify-content:space-around; align-items:center; background:rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index:9999; border-radius: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.8);}
+        .nav-link { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; width: 60px; height: 100%; cursor: pointer; color: #B0AFB5; position: relative;}
+        .nav-link.active { color: var(--primary-color); }
+        .nav-link .icon { width:26px; height:26px; margin-bottom: 2px; position: relative;}
+        .nav-link .icon svg { stroke: currentColor; fill:none; stroke-width: 2.2; stroke-linecap: round; width:100%; height:100%; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+        .nav-link.active .icon svg { transform: translateY(-4px) scale(1.15); filter: drop-shadow(0 4px 6px rgba(255, 90, 122, 0.3));}
+        
+        .nav-link.active::after { content: ''; position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: var(--primary-color); border-radius: 50%; box-shadow: 0 2px 5px rgba(255, 90, 122, 0.5); animation: fade 0.3s; }
+
+        .nav-link.center-btn { transform: translateY(-20px); background: var(--primary-grad); width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 10px 25px rgba(255, 90, 122, 0.4); border: 4px solid var(--bg-color); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+        .nav-link.center-btn:hover { transform: translateY(-23px) scale(1.05); }
+        .nav-link.center-btn:active { transform: translateY(-18px) scale(0.95); }
+        .nav-link.center-btn .icon { margin:0; width: 28px; height: 28px;}
+        .nav-link.center-btn .icon svg { stroke: #fff;}
+        .nav-link.center-btn::after { display: none; }
+        body.preg-mode .nav-link.center-btn { background: linear-gradient(135deg, #5AA1FF, #76CEFF); box-shadow: 0 10px 25px rgba(90, 161, 255, 0.4); border-color: #F1F8FE;}
+
+        .modal { position:fixed; inset:0; z-index:99999; background:var(--modal-bg); backdrop-filter: blur(8px); display:none; justify-content:center; align-items:flex-end; padding-bottom:env(safe-area-inset-bottom); animation: fade 0.3s;}
+        .modal-body { width: 100%; background: #fff; padding:35px 24px; border-radius: 40px 40px 0 0; transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.1, 1, 0.3, 1);}
+        .modal.open { display:flex; } .modal.open .modal-body { transform:translateY(0); }
+        
+        #gToast { visibility: hidden; position: fixed; bottom:calc(120px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background:rgba(43, 43, 50, 0.95); backdrop-filter: blur(10px); color:white; padding:16px 24px; border-radius: 30px; z-index: 100000; box-shadow:0 10px 30px rgba(0,0,0,0.25); font-size:15px; font-weight: 700; opacity:0; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:flex; align-items:center; gap:10px; width:max-content; max-width: 90%; border: 1px solid rgba(255,255,255,0.1);}
+        #gToast.show { visibility: visible; opacity:1; bottom: calc(110px + env(safe-area-inset-bottom)); }
+        @keyframes fade {from {opacity:0} to {opacity:1}}
+
+        .quote-box { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 18px 20px; border-radius: 20px; margin: 0 24px 15px; font-style: italic; color: var(--text-dark); font-weight: 700; font-size: 15px; text-align: center; border: 1.5px dashed var(--primary-color); box-shadow: 0 8px 20px rgba(0,0,0,0.03); animation: slideUpFade 0.8s both; animation-delay: 0.15s;}
+        
+        /* Mood & Care UI */
+        .mood-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .mood-btn { background: #F8F9FA; border-radius: 18px; padding: 15px 0; text-align: center; font-size: 32px; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);}
+        .mood-btn span.label { font-size: 11px; font-weight: 800; color: var(--text-muted); transition: color 0.3s; }
+        .mood-btn:hover, .mood-btn:active { background: #fff; border-color: var(--primary-color); transform: translateY(-5px) scale(1.08); box-shadow: 0 10px 20px rgba(255, 90, 122, 0.15); }
+        .mood-btn:active span.label { color: var(--primary-color); }
+        
+        .mood-response { background: var(--bg-color); padding: 15px; border-radius: 15px; margin-top: 15px; font-size: 14px; font-weight: 600; color: var(--text-dark); border-left: 4px solid var(--primary-color); display: none; animation: slideUpFade 0.4s;}
+
+        .water-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px; }
+        .glass-btn { height: 55px; border-radius: 16px; background: #F0F0F5; display:flex; align-items:center; justify-content:center; font-size: 26px; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; }
+        .glass-btn::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: #5AA1FF; transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 0; }
+        .glass-btn.filled::after { height: 100%; }
+        .glass-btn span { position: relative; z-index: 1; transition: transform 0.3s; }
+        .glass-btn.filled { box-shadow: 0 8px 20px rgba(90, 161, 255, 0.3); animation: waterSplash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .glass-btn.filled span { transform: scale(1.2); }
+        
+        @keyframes waterSplash {
+            0% { transform: scale(0.8) translateY(10px); }
+            50% { transform: scale(1.1) translateY(-5px); }
+            100% { transform: scale(1) translateY(0); }
+        }
+        
+        .relax-btn-huge { width: calc(100% - 40px); margin: 20px; background: linear-gradient(135deg, #8A2BE2, #DDA0DD); color: white; border-radius: 25px; padding: 22px; text-align: center; font-weight: 800; font-size: 17px; box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3); cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:flex; justify-content:center; align-items:center; gap:12px; animation: slideUpFade 0.8s both, pulse-btn-glow 3s infinite alternate; animation-delay: 0.25s;}
+        .relax-btn-huge:active { transform: scale(0.95); box-shadow: 0 5px 15px rgba(138, 43, 226, 0.2); }
+
+        @keyframes pulse-btn-glow {
+            0% { box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3); transform: translateY(0); }
+            100% { box-shadow: 0 15px 45px rgba(138, 43, 226, 0.6); transform: translateY(-3px); }
+        }
+
+        .care-tip { display: flex; align-items: center; gap: 15px; background: linear-gradient(135deg, #FFF9C4, #FFF59D); padding: 18px; border-radius: 20px; margin-top: 15px; box-shadow: 0 5px 15px rgba(255, 235, 59, 0.2); }
+        .care-tip .icon { font-size: 32px; }
+        .care-tip .text { font-size: 14px; font-weight: 700; color: #5C5512; }
+
+        /* Login Page Specifics */
+        .login-header { text-align: center; margin-bottom: 30px; animation: slideUpFade 0.8s both;}
+        .login-header img { width: 80px; margin-bottom: 10px; animation: float 4s infinite alternate ease-in-out; }
+
+        /* Magic Rant Box Specific Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px) rotate(-1deg); }
+            40%, 80% { transform: translateX(5px) rotate(1deg); }
+        }
+        @keyframes fadeOutBurn {
+            0% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+            100% { opacity: 0; transform: scale(0.9) translateY(-20px); filter: blur(10px); }
+        }
+
+        /* =========================================
+           ✨ POWERFUL BREATHE & RELAX PRO SYSTEM ✨ 
+           ========================================= */
+        #breathModal { background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(15px); display: none; }
+        .br-immersive-bg { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(157, 122, 255, 0.1) 0%, transparent 80%); z-index: 1; transition: background 2s ease, transform 4s ease; }
+        
+        .br-wrapper { position: relative; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; overflow: hidden; padding-bottom: 50px;}
+        
+        .br-main-title { color: white; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 10; }
+        .br-sub-title { color: #DDA0DD; font-size: 16px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 60px; z-index: 10; }
+        
+        .br-circle-container { position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; z-index: 10; margin-bottom: 40px; }
+        
+        .br-ring { position: absolute; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.1); width: 150px; height: 150px; pointer-events: none; }
+        #brRing1 { box-shadow: 0 0 30px rgba(157, 122, 255, 0.2); }
+        #brRing2 { box-shadow: 0 0 50px rgba(221, 160, 221, 0.1); }
+        
+        .br-center-pro { width: 150px; height: 150px; background: linear-gradient(135deg, #8A2BE2, #DDA0DD); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 800; box-shadow: 0 0 40px rgba(138, 43, 226, 0.5); z-index: 5; text-align: center; }
+        
+        .br-phase-text { font-size: 16px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; opacity: 0.9; }
+        .br-time-text { font-size: 56px; line-height: 1; margin-top: 5px; text-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: 900; }
+        
+        .br-cycles-count { background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 20px; color: #fff; font-size: 14px; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); z-index: 10; }
+        
+        .br-finish-btn { background: white; color: #8A2BE2; padding: 18px 40px; border-radius: 30px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(255,255,255,0.2); margin-top: 30px; transition: 0.3s; z-index: 10; }
+        .br-finish-btn:active { transform: scale(0.95); }
+
+        /* =========================================
+           ✨ CUTE ANIMATED DOLL & HINDI CHAT ✨ 
+           ========================================= */
+        .mascot-container {
+            position: fixed;
+            bottom: calc(110px + env(safe-area-inset-bottom));
+            right: 15px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            pointer-events: auto; /* Allow tapping the doll */
+        }
+        .mascot-doll {
+            font-size: 65px;
+            animation: float-doll 3s infinite alternate ease-in-out;
+            filter: drop-shadow(0 10px 15px rgba(255, 90, 122, 0.4));
+            transform-origin: bottom center;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 40%, transparent 70%);
+            border-radius: 50%;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 5px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset 0 0 20px rgba(255, 90, 122, 0.1);
+        }
+        .mascot-doll:active {
+            transform: scale(0.85);
+        }
+        .mascot-speech {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 14px 20px;
+            border-radius: 20px 20px 0 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            font-size: 14.5px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            max-width: 240px;
+            text-align: right;
+            border: 2px solid var(--primary-color);
+            display: none; /* toggled by JS */
+            transform-origin: bottom right;
+        }
+        
+        @keyframes float-doll {
+            0% { transform: translateY(0) rotate(-3deg); }
+            100% { transform: translateY(-15px) rotate(3deg); }
+        }
+        @keyframes speech-pop {
+            0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(0.5) translateY(20px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <div id="gToast"><span id="gToastIco">✨</span><span id="gToastMsg"></span></div>
+
+    <!-- MAIN REGISTRATION WRAPPER -->
+    <div id="initGate" style="display: none; padding-top:8vh; position: relative; z-index: 2;">
+        <div class="login-header">
+            <div style="font-size:60px; margin-bottom:10px;">🌸</div>
+            <div style="font-size:42px; font-weight:900; color:var(--primary-color); letter-spacing: -1.5px;">Glow<span style="color:var(--text-dark);">Track</span></div>
+            <p style="color:var(--text-muted); font-weight:700; font-size: 16px; margin-top:5px; padding: 0 20px;" data-en="Your personal best friend & delicate health companion 💖" data-hi="आपकी सबसे खास सहेली और स्वास्थ्य साथी 💖">...</p>
+        </div>
+        
+        <div class="card">
+            <h2 data-en="Let's personalize your care beautiful! ✨" data-hi="शुरुआत करें, मेरी प्यारी सहेली! ✨" style="text-align:center; margin-top:0; color:var(--text-dark); font-size: 22px;"></h2>
+            
+            <label style="font-weight:700; margin-left: 5px; color:var(--text-muted); font-size: 14px;" data-en="Your Beautiful Name" data-hi="आपका प्यारा सा नाम"></label>
+            <input type="text" id="regUser" placeholder="e.g. Suhana">
+            
+            <label style="font-weight:700; margin-left: 5px; color:var(--text-muted); font-size: 14px;" data-en="Your Age" data-hi="आपकी उम्र"></label>
+            <input type="number" id="regAge" placeholder="24">
+
+            <label style="font-weight:700; margin-left: 5px; color:var(--text-muted); font-size: 14px;" data-en="Last Period Date (First day of bleeding)" data-hi="माहवारी शुरू होने का आखिरी दिन"></label>
+            <input type="date" id="regDate">
+            
+            <div style="display:flex; gap:15px;">
+                <div style="flex:1;">
+                    <label style="font-size:13px; font-weight:700; margin-left:5px; color:var(--text-muted);" data-en="Cycle (Days)" data-hi="मासिक चक्र (दिन)"></label>
+                    <input type="number" id="regCycle" value="28">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:13px; font-weight:700; margin-left:5px; color:var(--text-muted);" data-en="Bleed (Days)" data-hi="रक्तस्राव (दिन)"></label>
+                    <input type="number" id="regFlow" value="5">
+                </div>
+            </div>
+
+            <label style="font-size:13px; font-weight:700; margin-left:5px; margin-top: 5px; color:var(--text-muted);" data-en="Select Preferred Language" data-hi="हम किस भाषा में बात करें?"></label>
+            <select id="regLangPref" onchange="testTempSwitch(this.value)">
+                <option value="en">English (Global) 🌍</option>
+                <option value="hi" selected>हिंदी (मातृभाषा) 🌸</option>
+            </select>
+
+            <label style="font-size:13px; font-weight:700; margin-left:5px; margin-top: 5px; color:var(--text-muted);" data-en="Choose Your Vibe (Theme)" data-hi="अपना पसंदीदा रंग (Theme) चुनें"></label>
+            <select id="regTheme" onchange="previewTheme(this.value)">
+                <option value="default">Rose Pink 🌸</option>
+                <option value="lavender">Lavender Calm 💜</option>
+                <option value="mint">Mint Fresh 🌿</option>
+                <option value="peach">Peach Glow 🍑</option>
+            </select>
+            
+            <button class="btn" onclick="saveAuth()" data-en="Start My Healing Journey 🚀" data-hi="मेरी केयर जर्नी शुरू करें 🚀">..</button>
+        </div>
+    </div>
+
+    <!-- PRODUCTION LIVE DASHBOARD -->
+    <div id="dashBoardGate" style="display: none; position: relative; z-index: 2;">
+        
+        <!-- CUTE MASCOT DOLL (Always floats and speaks) -->
+        <div id="mascot-container" class="mascot-container">
+            <div id="mascot-speech" class="mascot-speech">नमस्ते मेरी प्यारी! 🌸</div>
+            <div id="mascot-doll" class="mascot-doll" onclick="pokeDoll(event)">🧚‍♀️</div>
+        </div>
+
+        <div class="top-hero">
+            <h1 class="greet" data-hi="हेलो मेरी प्यारी, <span id='usrNm'>-</span> 🌸" data-en="Hello gorgeous, <span id='usrNm'>-</span> 🌸">नमस्ते...</h1>
+            <p style="font-weight: 600; font-size:16px; margin-top:8px; color:var(--text-muted); line-height: 1.4;" id="ovPhaseMsg">--</p>
+        </div>
+
+        <div class="quote-box" id="dailyQuoteTxt">"आप जैसी हैं, बहुत खूबसूरत और स्ट्रॉन्ग हैं। 💖"</div>
+        
+        <div class="circ-wrap">
+            <svg class="circ-progress">
+                <defs>
+                    <linearGradient id="dynamicGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="var(--primary-color)" id="gdCol1" />
+                        <stop offset="100%" stop-color="#FF7696" id="gdCol2" />
+                    </linearGradient>
+                </defs>
+                <circle class="circ-bg" cx="140" cy="140" r="120"></circle>
+                <circle class="circ-ring" cx="140" cy="140" r="120" id="cStroke"></circle>
+            </svg>
+            <div class="inner-plate">
+                <span class="p-stat" id="progPillsTag">Predicting...</span>
+                <span class="main-huge" id="txtDaysVal">--</span>
+                <span style="font-weight:800; color:#888; margin-top:8px; font-size:16px; text-transform: uppercase; letter-spacing: 1px;" id="lblTimer" data-hi="दिन बचे हैं" data-en="Days Left">Days</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; width: 100%;">
+            <div class="timer-box" id="timeCounter">
+                <div class="t-chunk"><span id="ltH">00</span><span class="t-label">Hr</span></div> <span class="sep">:</span>
+                <div class="t-chunk"><span id="ltM">00</span><span class="t-label">Min</span></div> <span class="sep">:</span>
+                <div class="t-chunk"><span id="ltS">00</span><span class="t-label">Sec</span></div>
+            </div>
+        </div>
+
+        <!-- BREATHE & RELAX BUTTON -->
+        <div class="relax-btn-huge" onclick="openBreathModal()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>
+            <span data-hi="सांस लें और रिलैक्स करें 🌿" data-en="Breathe & Relax 🌿"></span>
+        </div>
+
+        <!-- Mood Tracker Card -->
+        <div class="card" style="border-radius:30px;">
+            <h3 style="margin:0; font-size:18px; color:var(--text-dark);" data-hi="आज कैसा लग रहा है? 💕" data-en="How are you feeling today? 💕"></h3>
+            <p style="margin:5px 0 0 0; font-size:13px; color:#888; font-weight:600;" data-hi="मुझे बताओ, मैं सुन रही हूँ..." data-en="Tell me, I am here for you..."></p>
+            
+            <div class="mood-grid">
+                <div class="mood-btn" onclick="setMood('happy', event)">😊<span class="label" data-hi="खुश" data-en="Happy">Happy</span></div>
+                <div class="mood-btn" onclick="setMood('sad', event)">🥺<span class="label" data-hi="उदास" data-en="Sad">Sad</span></div>
+                <div class="mood-btn" onclick="setMood('cramps', event)">😫<span class="label" data-hi="दर्द" data-en="Cramps">Cramps</span></div>
+                <div class="mood-btn" onclick="setMood('angry', event)">😡<span class="label" data-hi="गुस्सा" data-en="Angry">Angry</span></div>
+            </div>
+            <div class="mood-response" id="moodResponse">
+                <span id="moodResponseTxt"></span>
+            </div>
+        </div>
+
+        <!-- Magic Rant Box -->
+        <div class="card" id="rantCard" style="border-radius:30px; background: linear-gradient(180deg, var(--card-bg) 0%, #FFF5F7 100%);">
+            <h3 style="margin:0; font-size:18px; color:var(--text-dark);" data-hi="अपना सारा गुस्सा यहाँ निकालो 📝" data-en="Vent it all out here 📝"></h3>
+            <p style="margin:5px 0 15px 0; font-size:13px; color:#888; font-weight:600;" data-hi="जो भी बुरा लग रहा है लिखो और फूँ करके उड़ा दो!" data-en="Write what's bothering you and blow it away!"></p>
+            
+            <textarea id="rantBox" data-hi="यहाँ टाइप करें (कोई नहीं पढ़ेगा)..." data-en="Type here (Nobody will read this)..." placeholder="यहाँ टाइप करें..."></textarea>
+            <button class="btn" style="background: var(--text-dark); margin-top: 0;" onclick="burnRant()" data-hi="फूँ करके उड़ा दो 🌬️" data-en="Let it Go 🌬️">Let it Go</button>
+        </div>
+
+        <div class="card-dual">
+            <div class="card" style="padding: 20px; border-radius: 25px;">
+                <h4 style="color:var(--text-muted); font-size:13px; margin:0; font-weight:700;" data-en="Cycle Length" data-hi="साइकिल की लंबाई">--</h4>
+                <div style="font-size:24px; font-weight: 800; display:flex; justify-content:space-between; align-items:center; margin-top:8px; color:var(--text-dark);">
+                    <span id="cTxtDt">28 D</span> 
+                    <div class="edit-icn" onclick="popEditor()"><svg viewBox="0 0 24 24" width="16" fill="white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></div>
+                </div>
+            </div>
+            <div class="card" style="padding: 20px; border-radius: 25px;">
+                 <h4 style="color:var(--text-muted); font-size:13px; margin:0; font-weight:700;" data-hi="अगली डेट" data-en="Expected Start">--</h4>
+                 <div style="font-size:24px; font-weight: 800; color:var(--primary-color); margin-top:8px;" id="cNxDt">24 Mar</div>
+            </div>
+        </div>
+
+        <!-- Water Hydration Card -->
+        <div class="card" style="margin-top:20px; border-radius:30px;">
+            <h3 style="margin:0; font-size:18px; color:var(--text-dark); display:flex; justify-content:space-between; align-items:center;">
+                <span data-hi="💧 पानी का लक्ष्य" data-en="💧 Hydration Goal"></span>
+                <div style="text-align:right;">
+                    <span id="wCount" style="color:#5AA1FF; font-weight:800; font-size:20px;">0.0 L</span>
+                    <div style="font-size:12px; color:#888; font-weight:600;" id="wGlassCount">0/8 Glasses</div>
+                </div>
+            </h3>
+            <p style="margin:5px 0 0 0; font-size:13px; color:#888; font-weight:600;" data-hi="दिनभर में 2 लीटर पानी पिएं, इससे क्रैम्प्स (दर्द) में बहुत आराम मिलेगा।" data-en="Drink 2 Liters daily to reduce cramps significantly."></p>
+            <div class="water-grid">
+                <div class="glass-btn" onclick="tgWater(this, 0, event)"><span class="w-icon">🥛</span></div>
+                <div class="glass-btn" onclick="tgWater(this, 1, event)"><span class="w-icon">🥛</span></div>
+                <div class="glass-btn" onclick="tgWater(this, 2, event)"><span class="w-icon">🥛</span></div>
+                <div class="glass-btn" onclick="tgWater(this, 3, event)"><span class="w-icon">🥛</span></div>
+                <div class="glass-btn" onclick="tgWater(this, 4, event)"><span class="w-icon">🥛</span></div>
+                <div class="glass-btn" onclick="tgWater(this, 5, event)"><span class="w-icon">🥛</span></div>
+                <div class="glass-btn" onclick="tgWater(this, 6, event)"><span class="w-icon">🥛</span></div>
+                <div class="glass-btn" onclick="tgWater(this, 7, event)"><span class="w-icon">🥛</span></div>
+            </div>
+            
+            <div class="care-tip">
+                <div class="icon">🍫</div>
+                <div class="text" data-hi="अगर मीठा खाने का मन हो, तो डार्क चॉकलेट खाएं! यह मूड अच्छा करती है। 💖" data-en="Craving sweets? Have some dark chocolate! It naturally boosts your mood. 💖"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cycle Editor Modal -->
+    <div class="modal" id="modaleditor" onclick="if(event.target==this) closeEditor()">
+        <div class="modal-body">
+            <h2 data-en="Adjust Your Cycle Details" data-hi="डायरी विवरण ठीक करें" style="margin-top:0; color:var(--text-dark);">Fix Record</h2>
+            <br>
+            <label style="font-weight:700;" data-hi="आखरी माहवारी की तारीख" data-en="Last recorded cycle start date"></label>
+            <input type="date" id="mdLtst" style="border: 2px solid var(--primary-color);">
+            
+            <label style="font-weight:700; margin-top: 10px;" data-hi="आपकी एवरेज साइकिल (दिन)" data-en="Your default Cycle length (Days)"></label>
+            <input type="number" id="mdLn" value="28">
+            <button class="btn" style="margin-top: 20px; padding: 20px;" onclick="saveEditorRealtime()" data-hi="सेव करें (Save)" data-en="Save changes locally">Save</button>
+        </div>
+    </div>
+
+    <!-- ✨ POWERFUL BREATHE & RELAX MODAL ✨ -->
+    <div id="breathModal" style="position: fixed; inset: 0; z-index: 999999;">
+        <div class="br-immersive-bg" id="brImmersiveBg"></div>
+        <div class="br-wrapper">
+            <h2 class="br-main-title" data-hi="आंखें बंद करें..." data-en="Close your eyes..."></h2>
+            <p class="br-sub-title">4 - 7 - 8 Technique</p>
+            
+            <div class="br-circle-container">
+                <div class="br-ring" id="brRing1"></div>
+                <div class="br-ring" id="brRing2"></div>
+                
+                <div class="br-center-pro" id="brCircPro">
+                    <span class="br-phase-text" id="brPhase">सांस लें</span>
+                    <span class="br-time-text" id="brSecs">4</span>
+                </div>
+            </div>
+            
+            <div class="br-cycles-count" id="brCyclesTxt">पूर्ण साइकिल: 0</div>
+            
+            <button class="br-finish-btn" onclick="closeBreathModal()" data-hi="रिलैक्स हो गया 🌸" data-en="Finished 🌸"></button>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <div class="navbar-base">
+        <a onclick="location.href='index.html'" class="nav-link active"><div class="icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div></a>
+        <a onclick="location.href='calendar.html'" class="nav-link"><div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div></a>
+        <a onclick="location.href='symptoms.html'" class="nav-link center-btn"><div class="icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></a>
+        <a onclick="location.href='tools.html'" class="nav-link"><div class="icon"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div></a>
+        <a onclick="location.href='settings.html'" class="nav-link"><div class="icon"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg></div></a>
+    </div>
+
+    <script>
+        const appMem = JSON.parse(localStorage.getItem('userData'));
+        let configMem = JSON.parse(localStorage.getItem('appConfig')) || { lang: 'hi', pregMode: false, alerts:{period:true, water:true, love:true}, theme: 'default' };
+        if(!configMem.alerts) configMem.alerts = {period:true, water:true, love:true};
+        if(!configMem.theme) configMem.theme = 'default';
+        let actCycleMs, targEnd, latestStMsLocal, ltTimerHandle;
+
+        function applyTheme(themeName) {
+            document.body.className = '';
+            if(themeName !== 'default') document.body.classList.add('theme-' + themeName);
+            if(configMem.pregMode) document.body.classList.add('preg-mode');
+        }
+
+        function previewTheme(themeName) { applyTheme(themeName); }
+
+        function setToast(msg, ok=true) {
+            let el = document.getElementById('gToast');
+            document.getElementById('gToastIco').innerText = ok ? "💖" : "✨";
+            document.getElementById('gToastMsg').innerText = msg;
+            el.className="show"; setTimeout(()=>el.className="", 3500);
+        }
+
+        // Particle System for Cuteness ✨
+        function createParticles(x, y, isWater = false) {
+            const numParticles = 8;
+            for(let i=0; i<numParticles; i++) {
+                let p = document.createElement('div');
+                p.className = 'magic-particle';
+                p.innerText = isWater ? '💧' : (Math.random() > 0.5 ? '💖' : '✨');
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                // Random fly direction
+                p.style.setProperty('--dx', (Math.random() * 100 - 50) + 'px');
+                p.style.setProperty('--dy', (Math.random() * -100 - 20) + 'px');
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1200);
+            }
+        }
+
+        function uiTxtRender() {
+            document.querySelectorAll('[data-'+configMem.lang+']').forEach(nd => {
+                if(nd.tagName === 'TEXTAREA' || nd.tagName === 'INPUT') {
+                    if(nd.placeholder) {
+                        nd.placeholder = nd.getAttribute('data-'+configMem.lang).replace('{n}', appMem?appMem.name:'User');
+                    }
+                } else {
+                    nd.innerHTML = nd.getAttribute('data-'+configMem.lang).replace('{n}', appMem?appMem.name:'User');
+                }
+            });
+            if(appMem) document.getElementById('usrNm').innerText = appMem.name;
+        }
+
+        function syncWithAndroid() {
+            if (!window.Android || !window.Android.scheduleSmartAlarm || !appMem) return;
+            try {
+                let wtState = JSON.parse(localStorage.getItem('waterLog')) || { count: 0, dt: new Date().toDateString() };
+                if (wtState.dt !== new Date().toDateString()) wtState.count = 0;
+                
+                let freq = localStorage.getItem('lastFreqKey') || "DAILY";
+                if(localStorage.getItem('masterToglStatus') === "NO") freq = "OFF";
+                
+                window.Android.scheduleSmartAlarm(
+                    appMem.lastDate, appMem.cycleLength.toString(), freq, 
+                    configMem.lang, appMem.name || "Beautiful", wtState.count,
+                    configMem.alerts.period, configMem.alerts.water, configMem.alerts.love
+                );
+            } catch(e) {}
+        }
+
+        // ✨ 100% ACCURATE DATE CALCULATOR FIX ✨
+        function runMasterCalculator(user) {
+            const nowMs = new Date().getTime();
+            const lrDate = new Date(user.lastDate);
+            lrDate.setHours(0,0,0,0);
+            const lrMs = lrDate.getTime();
+
+            const cycleDays = parseInt(user.cycleLength) || 28;
+            actCycleMs = cycleDays * 86400000;
+
+            const diffDays = Math.floor((nowMs - lrMs) / 86400000);
+            const diffCys = Math.max(0, Math.floor(diffDays / cycleDays));
+
+            // Start date of the CURRENT cycle
+            const latestStMs = lrMs + (diffCys * actCycleMs);
+            targEnd = latestStMs + actCycleMs; 
+            
+            if(configMem.pregMode) return { tp: 'PREG' };
+            return { rawEnd: targEnd, latestStMs: latestStMs }; 
+        }
+
+        // Mascot Helper Functions
+        function triggerHaptic(ms) {
+            if(navigator.vibrate) { navigator.vibrate(ms); }
+        }
+
+        function pokeDoll(e) {
+            let mSpeech = document.getElementById('mascot-speech');
+            let quotes =[
+                "तुम बहुत स्ट्रांग हो मेरी प्यारी! 💪", 
+                "मैं हमेशा तुम्हारे साथ हूँ! 💖", 
+                "पानी पी लिया ना तुमने? 💧", 
+                "मुस्कुराओ, तुम्हारी मुस्कान बहुत प्यारी है! 🥰",
+                "कोई टेंशन मत लो, सब ठीक हो जाएगा! ✨"
+            ];
+            
+            // Add sparkles on tap!
+            if(e) createParticles(e.clientX, e.clientY);
+
+            if(mSpeech) {
+                 mSpeech.innerText = quotes[Math.floor(Math.random()*quotes.length)];
+                 mSpeech.style.display = 'block';
+                 mSpeech.style.animation = 'none';
+                 setTimeout(() => { mSpeech.style.animation = 'speech-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'; }, 10);
+                 setTimeout(() => { mSpeech.style.animation = 'fadeOut 0.5s forwards'; }, 5000);
+            }
+            triggerHaptic(50);
+        }
+
+        // Mascot auto-talk logic periodically
+        setInterval(() => {
+            let mSpeech = document.getElementById('mascot-speech');
+            if(mSpeech && (mSpeech.style.opacity == 0 || mSpeech.style.display == 'none' || mSpeech.style.animationName === 'fadeOut')) {
+                 mSpeech.style.display = 'block';
+                 mSpeech.style.animation = 'speech-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+                 setTimeout(() => {
+                     mSpeech.style.animation = 'fadeOut 0.5s forwards';
+                 }, 8000);
+            }
+        }, 25000);
+
+        function spinLiveCountdowns() {
+             const nowMs = new Date().getTime();
+             const lr = new Date(appMem.lastDate).setHours(0,0,0,0);
+             const calcData = runMasterCalculator(appMem);
+             let dr = calcData.rawEnd - nowMs;
+             let msgPh = ""; let pillsTag = ""; let vTxt = "";
+             latestStMsLocal = calcData.latestStMs;
+             
+             // Mascot Variables
+             let mascotDoll = document.getElementById('mascot-doll');
+             let mascotSpeech = document.getElementById('mascot-speech');
+             let mEmoji = "🧚‍♀️";
+             let mText = "आज का दिन बहुत खूबसूरत है, बिल्कुल आपकी तरह! 🌸✨";
+
+             if (dr <= 0 && dr > -86400000) { 
+                  // It's the exact day!
+                  msgPh = configMem.lang=='hi'?`मेरी प्यारी ${appMem.name}, आपका पीरियड आज आ सकता है। गरम पानी और पैड तैयार रखें! 💖`:`Hey ${appMem.name}, your period might arrive today. Be prepared! 💖`;
+                  pillsTag = configMem.lang=='hi'?"आज पीरियड डेट":"Period Today"; vTxt = "0";
+                  document.getElementById('cStroke').style.stroke = "#FF426A";
+                  mEmoji = "🧸"; mText = "आज डेट हो सकती है! पैड तैयार रखना और स्ट्रेस मत लेना। 🫂";
+             }
+             else if (dr <= -86400000) {
+                  let dx = Math.ceil(Math.abs(dr) / 86400000);
+                  msgPh = configMem.lang=='hi'?`मेरी प्यारी ${appMem.name}, आपका पीरियड डिले हो रहा है। कृपया स्ट्रेस न लें और आराम करें। मैं हमेशा साथ हूँ! 💖`:`Looks like your period is delayed, ${appMem.name}. Rest well, I am here for you! 💖`;
+                  pillsTag = configMem.lang=='hi'?"पीरियड मिस हुआ":"Period Late"; vTxt = `${dx} Late`;
+                  document.getElementById('cStroke').style.stroke = "#FF426A";
+                  mEmoji = "🥺"; mText = "चिंता मत करो मेरी प्यारी, आराम करो और गरम पानी पियो! ☕🫂";
+             } else {
+                 let tDy = Math.floor(dr / 86400000); let rMod = dr % 86400000;
+                 document.getElementById('ltH').innerText = Math.floor(rMod / 3600000).toString().padStart(2,'0');
+                 document.getElementById('ltM').innerText = Math.floor((rMod % 3600000) / 60000).toString().padStart(2,'0');
+                 document.getElementById('ltS').innerText = Math.floor((rMod % 60000)/ 1000).toString().padStart(2,'0');
+                 
+                 vTxt = tDy; pillsTag = (configMem.lang=='hi'?"स्वस्थ ट्रैक":"Safe Phase");
+
+                 // ACCURATE DAYS RELATIVE TO CURRENT CYCLE
+                 let daysIntoCycle = Math.floor((nowMs - latestStMsLocal) / 86400000);
+
+                 if (daysIntoCycle >= 0 && daysIntoCycle <= parseInt(appMem.duration || 5)) {
+                     // Bleeding Phase
+                     msgPh = configMem.lang=='hi'?`मुझे पता है दर्द हो रहा है ${appMem.name}, हीटिंग पैड लगाओ और आराम करो। 🔥`:`I know it hurts ${appMem.name}, use a heating pad and rest. 🔥`;
+                     mEmoji = "🛌";
+                     mText = "मुझे पता है दर्द हो रहा है... हीटिंग पैड लगाओ और सो जाओ। 🥺🧸";
+                     document.getElementById('cStroke').style.stroke = "#FF426A";
+                     pillsTag = configMem.lang=='hi'?"माहवारी के दिन":"Period Days";
+                 }
+                 else if(tDy <= 14 && tDy >=12) {
+                     // Ovulation
+                     msgPh = configMem.lang=='hi'?"आज आप बहुत खूबसूरत, ऊर्जावान और खुश महसूस कर सकती हैं! अपने दिन को एन्जॉय करें 🌟":"You might feel very energetic and radiant today! Enjoy your day gorgeous 🌟"; pillsTag=configMem.lang=='hi'?"फर्टाइल / ओवुलेशन":"Fertile / Ovulation";
+                     document.getElementById('cStroke').style.stroke = "#FFAA2B";
+                     mEmoji = "💃";
+                     mText = "वाओ! आज आपकी एनर्जी और ग्लो एकदम जादू की तरह है! चमकती रहो! 🌟✨";
+                 } else if (tDy < 3) {
+                     // PMS
+                     msgPh = configMem.lang=='hi'?`डेट्स बहुत नज़दीक हैं ${appMem.name}, गरम पानी पिएं और हीटिंग पैड तैयार रखें। खुद को पैम्पर करें। 🔥`:`Getting closer, ${appMem.name}. Keep your heating pad ready and pamper yourself. 🔥`;
+                     mEmoji = "🍫";
+                     mText = "डेट्स आने वाली हैं! अपना फेवरेट चॉकलेट खा लो और रिलैक्स करो। 🤤❤️";
+                     pillsTag = "PMS Phase";
+                 } else { 
+                     // Normal Luteal/Follicular
+                     msgPh = configMem.lang=='hi'?"आपका शरीर अंदर से हील हो रहा है। अपना ख्याल रखें, आप बहुत स्ट्रॉन्ग हैं! 💖":"Your body is naturally healing today! You are incredibly strong! 💖"; document.getElementById('cStroke').style.stroke = "url(#dynamicGrad)"; 
+                     mEmoji = "🧚‍♀️";
+                     mText = "आज का दिन बहुत खूबसूरत है, बिल्कुल आपकी तरह! 🌸✨";
+                 }
+                 document.getElementById('cStroke').style.strokeDashoffset = 754 - (((actCycleMs - dr) / actCycleMs) * 754);
+             }
+
+             if(configMem.pregMode) {
+                 document.body.classList.add('preg-mode'); 
+                 document.getElementById('ovPhaseMsg').innerText = configMem.lang=='hi'?"एक नन्ही जान आपके अंदर पल रही है, अपना खास ख्याल रखें ✨👶🏻":"A little miracle is growing inside you, take extra care ✨👶🏻";
+                 document.getElementById('lblTimer').innerText = configMem.lang=='hi'?"हफ्ते (Weeks)":"Weeks Baby";
+                 document.getElementById('timeCounter').style.display = "none";
+                 document.getElementById('txtDaysVal').innerText = "W"+Math.floor((nowMs - lr)/604800000); 
+                 document.getElementById('cStroke').style.strokeDashoffset = 0; 
+                 document.getElementById('progPillsTag').innerText = "Baby Mode 💙";
+                 
+                 mEmoji = "👼";
+                 mText = "आप और आपका नन्हा मेहमान, दोनों बहुत स्पेशल हैं! ख्याल रखना 👶🏻💖";
+             } else {
+                 document.getElementById('progPillsTag').innerText = pillsTag;
+                 document.getElementById('txtDaysVal').innerText = vTxt; 
+                 document.getElementById('ovPhaseMsg').innerText = msgPh; 
+             }
+
+             // Apply Mascot updates securely
+             if(mascotDoll && mascotSpeech) {
+                 if(mascotDoll.innerText !== mEmoji) {
+                     mascotDoll.innerText = mEmoji;
+                     mascotDoll.style.animation = 'none';
+                     setTimeout(() => mascotDoll.style.animation = 'float-doll 3s infinite alternate ease-in-out', 10);
+                 }
+                 if(mascotSpeech.innerText !== mText && mascotSpeech.style.animationName !== 'fadeOut') {
+                     mascotSpeech.innerText = mText;
+                     mascotSpeech.style.display = 'block';
+                     mascotSpeech.style.animation = 'none';
+                     setTimeout(() => mascotSpeech.style.animation = 'speech-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', 10);
+                     
+                     setTimeout(() => {
+                         mascotSpeech.style.animation = 'fadeOut 0.5s forwards';
+                     }, 10000);
+                 }
+             }
+        }
+
+        function updateWaterUI(wtState) {
+            let gBtns = document.querySelectorAll('.glass-btn');
+            wtState.arr.forEach((v, i) => { if(v) gBtns[i].classList.add('filled'); else gBtns[i].classList.remove('filled'); });
+            document.getElementById('wGlassCount').innerText = `${wtState.count}/8 Glasses`;
+            document.getElementById('wCount').innerText = ((wtState.count * 250) / 1000).toFixed(1) + " L";
+        }
+
+        function loadHeartFeatures() {
+            let qtsHi =["तुम जैसी हो, बिल्कुल परफेक्ट और खूबसूरत हो। 💖", "आज खुद को थोड़ा एक्स्ट्रा प्यार दो, तुम डिज़र्व करती हो। 🌸", "मुस्कुराओ, क्योंकि तुम्हारी मुस्कान से सब अच्छा हो जाता है। ✨", "खुद पर भरोसा रखो, तुम एक मैजिक हो! 🦋"];
+            let qtsEn =["You are perfectly beautiful just the way you are. 💖", "Give yourself some extra love today, you deserve it. 🌸", "Smile, because your smile makes everything better. ✨", "Believe in yourself, you are absolute magic! 🦋"];
+            document.getElementById('dailyQuoteTxt').innerText = configMem.lang=='hi' ? qtsHi[new Date().getDay()%4] : qtsEn[new Date().getDay()%4];
+
+            let wtState = JSON.parse(localStorage.getItem('waterLog')) || {dt: new Date().toDateString(), count: 0, arr:[0,0,0,0,0,0,0,0]};
+            if(wtState.dt !== new Date().toDateString() || wtState.arr.length < 8) wtState = {dt: new Date().toDateString(), count: 0, arr:[0,0,0,0,0,0,0,0]};
+            
+            updateWaterUI(wtState);
+            localStorage.setItem('waterLog', JSON.stringify(wtState));
+        }
+
+        function setMood(moodType, e) {
+            let respHi = ""; let respEn = "";
+            if(moodType === 'happy') { respHi = "यही मुस्कान तो मुझे सबसे ज़्यादा पसंद है! नज़र ना लगे! 🥰🧿"; respEn = "This is the smile I love the most! Keep shining! 🥰🧿"; }
+            else if(moodType === 'sad') { respHi = "अरे मेरी प्यारी! उदास मत हो... मैं हूँ ना! अपने फेवरेट गाने सुनो और चिल करो। 🥺🫂"; respEn = "Oh honey, don't be sad... I am right here! Play your favorite song and relax. 🥺🫂"; }
+            else if(moodType === 'cramps') { respHi = "उफ्फ ये दर्द! 😣 तुरंत गरम पानी की बोतल लगाओ और आराम करो। काम बाद में कर लेना! ♨️"; respEn = "Ugh, the cramps! 😣 Grab a hot water bag right now and rest. Work can wait! ♨️"; }
+            else if(moodType === 'angry') { respHi = "गहरी साँस लो! 😤 हॉर्मोन्स की वजह से ऐसा हो रहा है। जाओ कुछ मीठा खा कर आओ! 🍫"; respEn = "Take a deep breath! 😤 It's just the hormones messing with you. Go treat yourself! 🍫"; }
+
+            if(e) createParticles(e.clientX, e.clientY);
+
+            let box = document.getElementById('moodResponse');
+            document.getElementById('moodResponseTxt').innerText = configMem.lang === 'hi' ? respHi : respEn;
+            box.style.display = 'block'; setTimeout(() => { box.style.display = 'none'; }, 6000);
+        }
+
+        function burnRant() {
+            let txtArea = document.getElementById('rantBox');
+            if(txtArea.value.trim() === '') { setToast(configMem.lang=='hi' ? "पहले कुछ लिखो तो सही! 😉" : "Write something first! 😉", false); return; }
+            
+            // Magic Burn Animation
+            let rantCard = document.getElementById('rantCard');
+            rantCard.style.animation = "shake 0.5s ease-in-out, fadeOutBurn 0.8s forwards";
+            triggerHaptic(100);
+
+            setTimeout(() => {
+                txtArea.value = ''; 
+                setToast(configMem.lang=='hi' ? "सब डिलीट हो गया! अब रिलैक्स करो। जादू! ✨" : "All gone! Now relax. Magic! ✨", true);
+                // Bring card back clean
+                rantCard.style.animation = "slideUpFade 0.6s cubic-bezier(0.1, 1, 0.3, 1) both";
+            }, 1000);
+        }
+
+        function tgWater(el, idx, e) {
+            let wtState = JSON.parse(localStorage.getItem('waterLog'));
+            if(wtState.arr[idx] == 0) {
+                wtState.arr[idx] = 1; wtState.count++; 
+                if(e) createParticles(e.clientX, e.clientY, true);
+                setToast(configMem.lang=='hi'?"शाबाश मेरी प्यारी! ऐसे ही पानी पीती रहो 💧":"Good girl! Keep drinking water 💧", true);
+                triggerHaptic(50);
+            } else { wtState.arr[idx] = 0; wtState.count--; }
+            localStorage.setItem('waterLog', JSON.stringify(wtState));
+            updateWaterUI(wtState); syncWithAndroid(); 
+        }
+
+        // ==========================================
+        // ✨ NEW POWERFUL BREATHE SYSTEM LOGIC ✨
+        // ==========================================
+        let brTickInterval;
+        let brCycles = 0;
+
+        function openBreathModal() {
+            document.getElementById('breathModal').style.display = 'block';
+            brCycles = 0;
+            document.getElementById('brCyclesTxt').innerText = configMem.lang=='hi' ? `पूर्ण साइकिल: ${brCycles}` : `Completed Cycles: ${brCycles}`;
+            
+            let cPro = document.getElementById('brCircPro');
+            let r1 = document.getElementById('brRing1');
+            let r2 = document.getElementById('brRing2');
+            let bg = document.getElementById('brImmersiveBg');
+            let phTxt = document.getElementById('brPhase');
+            let secTxt = document.getElementById('brSecs');
+            
+            let phase = 'in'; 
+            let timeLeft = 4;
+
+            function updateUI() {
+                secTxt.innerText = timeLeft;
+                if(phase === 'in') {
+                    phTxt.innerText = configMem.lang=='hi' ? "सांस लें" : "BREATHE IN";
+                    cPro.style.transition = "transform 4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 4s ease";
+                    cPro.style.transform = "scale(1.7)";
+                    cPro.style.boxShadow = "0 0 100px rgba(157, 122, 255, 0.8)";
+                    
+                    r1.style.transition = "transform 4s cubic-bezier(0.4, 0, 0.2, 1)";
+                    r1.style.transform = "scale(1.5)";
+                    r2.style.transition = "transform 4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s";
+                    r2.style.transform = "scale(2.0)";
+                    
+                    bg.style.background = "radial-gradient(circle at center, rgba(157, 122, 255, 0.4) 0%, rgba(10, 10, 15, 0.98) 80%)";
+                    bg.style.transform = "scale(1.1)";
+                    triggerHaptic([30, 50]); // Inhale start haptic
+                } 
+                else if(phase === 'hold') {
+                    phTxt.innerText = configMem.lang=='hi' ? "रोके रखें" : "HOLD";
+                    cPro.style.transition = "transform 7s linear, box-shadow 7s ease";
+                    cPro.style.transform = "scale(1.75)"; 
+                    
+                    r1.style.transition = "transform 7s linear";
+                    r1.style.transform = "scale(1.55)";
+                    r2.style.transition = "transform 7s linear";
+                    r2.style.transform = "scale(2.05)";
+                    triggerHaptic(50); // Hold start haptic
+                } 
+                else if(phase === 'out') {
+                    phTxt.innerText = configMem.lang=='hi' ? "बाहर छोड़ें" : "BREATHE OUT";
+                    cPro.style.transition = "transform 8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 8s ease";
+                    cPro.style.transform = "scale(1)";
+                    cPro.style.boxShadow = "0 0 40px rgba(157, 122, 255, 0.4)";
+                    
+                    r1.style.transition = "transform 8s cubic-bezier(0.4, 0, 0.2, 1)";
+                    r1.style.transform = "scale(1)";
+                    r2.style.transition = "transform 8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s";
+                    r2.style.transform = "scale(1)";
+                    
+                    bg.style.background = "radial-gradient(circle at center, rgba(157, 122, 255, 0.1) 0%, rgba(10, 10, 15, 0.98) 70%)";
+                    bg.style.transform = "scale(1)";
+                    triggerHaptic([30, 50]); // Exhale start haptic
+                }
+            }
+
+            updateUI(); // First Call
+
+            brTickInterval = setInterval(() => {
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    if(phase === 'in') { phase = 'hold'; timeLeft = 7; }
+                    else if(phase === 'hold') { phase = 'out'; timeLeft = 8; }
+                    else if(phase === 'out') { 
+                        phase = 'in'; timeLeft = 4; 
+                        brCycles++; 
+                        document.getElementById('brCyclesTxt').innerText = configMem.lang=='hi' ? `पूर्ण साइकिल: ${brCycles}` : `Completed Cycles: ${brCycles}`;
+                        if(brCycles === 5) setToast(configMem.lang=='hi' ? "बहुत बढ़िया! आपने 5 साइकिल पूरे कर लिए 🌸" : "Great! 5 cycles completed 🌸", true);
+                    }
+                    updateUI();
+                } else {
+                    secTxt.innerText = timeLeft;
+                }
+            }, 1000);
+        }
+
+        function closeBreathModal() { 
+            document.getElementById('breathModal').style.display = 'none'; 
+            clearInterval(brTickInterval);
+            
+            // Reset scales immediately to prevent glitches next time
+            document.getElementById('brCircPro').style.transition = "none";
+            document.getElementById('brCircPro').style.transform = "scale(1)";
+            document.getElementById('brRing1').style.transition = "none";
+            document.getElementById('brRing1').style.transform = "scale(1)";
+            document.getElementById('brRing2').style.transition = "none";
+            document.getElementById('brRing2').style.transform = "scale(1)";
+        }
+        // ==========================================
+
+        function startupSeq() {
+             applyTheme(configMem.theme);
+             if(appMem) {
+                  document.getElementById('dashBoardGate').style.display = 'block';
+                  document.getElementById('cTxtDt').innerText = appMem.cycleLength + " D";
+                  document.getElementById('cNxDt').innerText = new Date(runMasterCalculator(appMem).rawEnd).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+                  uiTxtRender(); spinLiveCountdowns(); loadHeartFeatures(); syncWithAndroid();
+                  ltTimerHandle = setInterval(spinLiveCountdowns, 1000);
+             } else { 
+                 document.getElementById('initGate').style.display = 'block'; uiTxtRender(); 
+             }
+        }
+        function testTempSwitch(lg){ configMem.lang=lg; uiTxtRender(); }
+
+        function saveAuth() {
+            let usName=document.getElementById('regUser').value; let ltDat=document.getElementById('regDate').value;
+            if(!usName||!ltDat){ setToast(configMem.lang=='hi' ? "अरे! कृपया पूरी जानकारी भरें ⚠️" : "Please fill all info! ⚠️", false); return; }
+            configMem.theme = document.getElementById('regTheme').value;
+            
+            localStorage.setItem('userData', JSON.stringify({name:usName,age:document.getElementById('regAge').value,lastDate:ltDat,cycleLength:document.getElementById('regCycle').value,duration:document.getElementById('regFlow').value}));
+            localStorage.setItem('appConfig', JSON.stringify(configMem)); 
+            setToast(configMem.lang=='hi' ? "आपका प्यारा प्रोफाइल सेट हो रहा है... 💖" : "Setting up your beautiful profile! 💖", true); 
+            setTimeout(()=>location.reload(), 1200);
+        }
+
+        function popEditor() { document.getElementById('mdLtst').value = appMem.lastDate; document.getElementById('mdLn').value = appMem.cycleLength; document.getElementById('modaleditor').classList.add('open'); }
+        function closeEditor() { document.getElementById('modaleditor').classList.remove('open'); }
+        
+        function saveEditorRealtime() {
+            appMem.lastDate = document.getElementById('mdLtst').value; appMem.cycleLength = document.getElementById('mdLn').value;
+            localStorage.setItem('userData', JSON.stringify(appMem));
+            closeEditor(); setToast(configMem.lang=='hi'?"डिटेल्स अपडेट हो गईं मेरी जान! 🎯":"New info LIVE tracked!", true); 
+            clearInterval(ltTimerHandle); startupSeq();
+        }
+        
+        document.addEventListener('DOMContentLoaded', startupSeq);
+    </script>
+</body>
+</html>
