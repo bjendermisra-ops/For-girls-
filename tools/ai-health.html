@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AI Health Assistant</title>
+    <style>
+        :root{--p:#9D7AFF;--bg:#F4F1FE;--c:#fff;--t:#31215C}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#DDA0DD;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .chat-box{background:var(--c);border-radius:25px;padding:20px;height:400px;overflow-y:auto;box-shadow:0 10px 25px rgba(157,122,255,.1);display:flex;flex-direction:column;gap:10px}
+        .msg{padding:12px 18px;border-radius:20px;max-width:80%;font-size:14px;font-weight:bold;animation:pop .3s}
+        .ai{background:#F4F1FE;align-self:flex-start;border-bottom-left-radius:5px;color:var(--t)}
+        .user{background:linear-gradient(135deg,var(--p),#BCA1FF);align-self:flex-end;border-bottom-right-radius:5px;color:#fff}
+        .chip-wrap{display:flex;gap:10px;overflow-x:auto;margin-top:15px;padding-bottom:10px;}
+        .chip{background:#fff;border:2px solid var(--p);color:var(--p);padding:10px 15px;border-radius:20px;font-size:13px;font-weight:bold;white-space:nowrap;cursor:pointer}
+        @keyframes pop{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+        .typing{font-style:italic;color:#888;font-size:12px;margin-left:10px;display:none}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">AI Assistant 🤖</h2>
+    </div>
+
+    <div class="chat-box" id="chat">
+        <div class="msg ai">Hi beautiful! I am your AI Health Assistant. Ask me anything! ✨</div>
+    </div>
+    <div class="typing" id="typ">AI is typing... ✍️</div>
+
+    <div class="chip-wrap">
+        <div class="chip" onclick="ask('Why is my period late?', 'Periods can be late due to stress, weight changes, PCOS, or pregnancy. If it is more than 7 days late, take a test! 🌸')">Late Period?</div>
+        <div class="chip" onclick="ask('How to reduce cramps?', 'Use a heating pad, drink chamomile tea, and avoid salty/junk food. Try the Child\'s Pose yoga stretch! ♨️')">Reduce Cramps?</div>
+        <div class="chip" onclick="ask('What should I eat today?', 'Eat iron-rich foods like spinach and dark chocolate. Drink at least 2 liters of water! 🍫')">Diet Tips?</div>
+    </div>
+
+    <script>
+        function ask(q, a) {
+            let chat = document.getElementById('chat');
+            chat.innerHTML += `<div class="msg user">${q}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+            
+            document.getElementById('typ').style.display = "block";
+            
+            setTimeout(()=>{
+                document.getElementById('typ').style.display = "none";
+                chat.innerHTML += `<div class="msg ai">${a}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+                if(navigator.vibrate) navigator.vibrate(50);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
