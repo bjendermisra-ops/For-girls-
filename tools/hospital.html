@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hospital & Ambulance</title>
+    <style>
+        :root{--p:#FF426A;--bg:#FFF0F3;--c:#fff;--t:#5C1926}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#FF8A65;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(255,66,106,.15);animation:slideUp .5s; text-align:center;}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .btn-sos{width:100%;background:linear-gradient(135deg,#FF0000,#FF426A);color:#fff;border:none;padding:20px;border-radius:20px;font-size:18px;font-weight:900;margin-top:20px;cursor:pointer;box-shadow:0 10px 30px rgba(255,0,0,.4);animation:pulse 2s infinite; text-decoration:none; display:inline-block; box-sizing:border-box;}
+        @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('सांस लेते रहो, सब ठीक है! 🚨')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Emergency SOS</h2>
+    </div>
+
+    <div class="card">
+        <h1 style="font-size:60px;margin:0;">🚑</h1>
+        <h3 style="margin:10px 0;color:#222">Medical Emergency?</h3>
+        <p style="color:#666;font-weight:bold;font-size:14px;">Tap below to instantly call the National Ambulance Service (108 India).</p>
+        
+        <!-- REAL SOS DIALER -->
+        <a href="tel:108" class="btn-sos" onclick="showM('कॉल लग रही है, हिम्मत रखो! 🚨')">CALL 108 NOW 🚨</a>
+        <p style="margin-top:20px;font-size:12px;color:#888;">Only for severe pain, excessive bleeding, or emergency labor.</p>
+    </div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        setTimeout(()=>showM("इमरजेंसी है? मैं मदद करूंगी! 🚨"), 500);
+    </script>
+</body>
+</html>
