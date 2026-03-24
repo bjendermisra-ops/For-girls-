@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Conception Calculator</title>
+    <style>
+        :root{--p:#5AA1FF;--bg:#F1F8FE;--c:#fff;--t:#333}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#D6E8FF;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(90,161,255,.1);animation:slideUp .5s}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        label{font-weight:bold;color:#666;font-size:14px;display:block;margin:15px 0 5px}
+        input{width:100%;padding:15px;border:2px solid #eee;border-radius:15px;font-size:16px;outline:none;box-sizing:border-box}
+        input:focus{border-color:var(--p)}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#76CEFF);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;margin-top:20px;cursor:pointer;box-shadow:0 5px 15px rgba(90,161,255,.3)}
+        .res{display:none;background:#F1F8FE;border:2px dashed var(--p);padding:20px;border-radius:20px;margin-top:20px;text-align:center;font-weight:bold;animation:pop .4s}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('जादू कब शुरू हुआ? चलो पता करें! ✨')">👼</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Conception Date</h2>
+    </div>
 
+    <div class="card">
+        <label>Expected Due Date (EDD)</label>
+        <input type="date" id="edd">
+        <button class="btn" onclick="calc()">Estimate Conception 🤍</button>
+        <div class="res" id="res"></div>
+    </div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function calc(){
+            let d = document.getElementById('edd').value;
+            if(!d) return showM("ड्यू डेट बताओ ना! 🥰");
+            
+            let edd = new Date(d);
+            let conc1 = new Date(edd); conc1.setDate(edd.getDate() - 266 - 2);
+            let conc2 = new Date(edd); conc2.setDate(edd.getDate() - 266 + 2);
+
+            document.getElementById('res').style.display="block";
+            document.getElementById('res').innerHTML = `Estimated Conception Window:<br><span style="font-size:20px;color:#5AA1FF;display:block;margin-top:10px">${conc1.toLocaleDateString()} to ${conc2.toLocaleDateString()}</span>`;
+            showM("यहीं से शुरू हुई तुम्हारी कहानी! 💖");
+        }
+        setTimeout(()=>showM("देखें बेबी कब कंसीव हुआ था? 👶🏻"), 500);
+    </script>
+</body>
+</html>
