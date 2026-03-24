@@ -1,1 +1,91 @@
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SOS Contacts</title>
+    <style>
+        :root{--p:#FF426A;--bg:#FFF0F3;--c:#fff;--t:#5C1926}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#FF8A65;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(255,66,106,.15);animation:slideUp .5s;margin-bottom:20px}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        input{width:100%;padding:15px;border:2px solid #eee;border-radius:15px;font-size:16px;outline:none;box-sizing:border-box;margin-bottom:10px}
+        input:focus{border-color:var(--p)}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#FF8A65);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;margin-top:10px;cursor:pointer;box-shadow:0 5px 15px rgba(255,66,106,.3)}
+        .sos-btn{width:100%;background:#222;color:#fff;border:none;padding:20px;border-radius:20px;font-size:18px;font-weight:900;text-decoration:none;display:block;text-align:center;box-sizing:border-box;margin-top:10px;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('अकेले बाहर जाओ तो लाइव लोकेशन शेयर करना! 📍')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Emergency Contacts</h2>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0">Setup SOS Contact</h3>
+        <input type="text" id="cname" placeholder="Contact Name (e.g. Mom)">
+        <input type="tel" id="cnum" placeholder="Phone Number">
+        <button class="btn" onclick="save()">Save Securely 🔒</button>
+    </div>
+
+    <div id="list"></div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function load(){
+            let cons = JSON.parse(localStorage.getItem('sos_cons')) ||[];
+            let html = "";
+            cons.forEach((c, i) => {
+                html += `<div class="card" style="padding:15px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <b>${c.n}</b> <span style="color:#FF426A;cursor:pointer" onclick="del(${i})">Delete ✕</span>
+                    </div>
+                    <a href="tel:${c.p}" class="sos-btn" onclick="showM('कॉल लग रही है 🚨')">CALL ${c.n.toUpperCase()} 📞</a>
+                </div>`;
+            });
+            document.getElementById('list').innerHTML = html;
+        }
+        function save(){
+            let n = document.getElementById('cname').value;
+            let p = document.getElementById('cnum').value;
+            if(!n || !p) return showM("नाम और नंबर दोनों डालो! 🥺");
+            let cons = JSON.parse(localStorage.getItem('sos_cons')) ||[];
+            if(cons.length>=3) return showM("सिर्फ 3 इमरजेंसी नंबर सेव हो सकते हैं! ⚠️");
+            cons.push({n,p});
+            localStorage.setItem('sos_cons', JSON.stringify(cons));
+            showM("नंबर सुरक्षित रूप से सेव हो गया! 🔒");
+            document.getElementById('cname').value = ""; document.getElementById('cnum').value = "";
+            load();
+        }
+        function del(i){
+            let cons = JSON.parse(localStorage.getItem('sos_cons')) ||[];
+            cons.splice(i, 1);
+            localStorage.setItem('sos_cons', JSON.stringify(cons));
+            load();
+        }
+        load();
+        setTimeout(()=>showM("अपने सबसे खास इंसान का नंबर यहाँ सेव कर लो! 💖"), 500);
+    </script>
+</body>
+</html>
