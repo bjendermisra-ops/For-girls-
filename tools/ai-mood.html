@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AI Mood Fixer</title>
+    <style>
+        :root{--p:#9D7AFF;--bg:#F4F1FE;--c:#fff;--t:#31215C}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#DDA0DD;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(157,122,255,.1);animation:slideUp .5s;text-align:center}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#BCA1FF);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;margin-top:15px;cursor:pointer;}
+        .res{display:none;background:#F4F1FE;border:2px dashed var(--p);padding:20px;border-radius:20px;margin-top:20px;text-align:left;font-weight:bold;animation:pop .4s}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('AI मैजिक तुम्हारे लिए! ✨')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">AI Mood Fixer</h2>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0">Click your vibe:</h3>
+        <button class="btn" onclick="fix('sad')">I am feeling Sad 🥺</button>
+        <button class="btn" onclick="fix('angry')">I am Angry 😡</button>
+        <button class="btn" onclick="fix('happy')">I feel Amazing 🤩</button>
+        <div class="res" id="res"></div>
+    </div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function fix(mood){
+            let res = document.getElementById('res');
+            res.style.display="block";
+            res.innerHTML = "<i>AI analyzing vibe... 🧠</i>";
+
+            setTimeout(()=>{
+                if(mood==='sad'){
+                    res.innerHTML = "<b>✨ AI Suggestion:</b><br>🎧 Listen: 'Weightless' by Marconi Union.<br>🛌 Action: Drink hot chocolate & wrap in a blanket.<br>💬 Affirmation: 'This feeling is temporary. I am safe.'";
+                    showM("रोना आए तो रो लो, मैं हूँ ना! 🫂");
+                }else if(mood==='angry'){
+                    res.innerHTML = "<b>✨ AI Suggestion:</b><br>🎧 Listen: Heavy Metal or Fast EDM.<br>🌬️ Action: 4-7-8 Deep Breathing.<br>💬 Affirmation: 'I release what I cannot control.'";
+                    showM("गहरी सांस लो! 🧘‍♀️");
+                }else{
+                    res.innerHTML = "<b>✨ AI Suggestion:</b><br>🎧 Listen: 2000s Pop Hits!<br>💃 Action: Dance in your room!<br>💬 Affirmation: 'I am a queen and I own today!'";
+                    showM("यही स्माइल तो मुझे पसंद है! 🥰");
+                }
+                if(navigator.vibrate) navigator.vibrate([50,50]);
+            }, 1000);
+        }
+        setTimeout(()=>showM("मूड खराब है? AI को ठीक करने दो! 🔮"), 500);
+    </script>
+</body>
+</html>
