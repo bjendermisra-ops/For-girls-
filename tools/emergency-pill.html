@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Emergency Pill Guide</title>
+    <style>
+        :root{--p:#FF426A;--bg:#FFF0F3;--c:#fff;--t:#5C1926}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#FF8A65;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(255,66,106,.15);animation:slideUp .5s}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        label{font-weight:bold;color:#444;font-size:14px;display:block;margin:15px 0 5px}
+        input{width:100%;padding:15px;border:2px solid #eee;border-radius:15px;font-size:16px;outline:none;box-sizing:border-box}
+        input:focus{border-color:var(--p)}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#FF8A65);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;margin-top:20px;cursor:pointer;box-shadow:0 5px 15px rgba(255,66,106,.3)}
+        .res{display:none;background:#FFF0F3;border:2px dashed var(--p);padding:20px;border-radius:20px;margin-top:20px;text-align:center;font-weight:bold;animation:pop .4s}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('घबराओ मत, मैं मदद करूंगी! 🫂')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Emergency Pill Efficacy</h2>
+    </div>
+
+    <div class="card">
+        <label>Hours passed since unprotected intimacy?</label>
+        <input type="number" id="hrs" placeholder="e.g. 24">
+        <button class="btn" onclick="calc()">Check Efficacy 🚨</button>
+        <div class="res" id="res"></div>
+    </div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function calc(){
+            let h = parseInt(document.getElementById('hrs').value);
+            let res = document.getElementById('res');
+            res.style.display="block";
+
+            if(!h && h!==0) return showM("घंटे बता दो प्लीज़! 🥺");
+
+            if(h <= 24) { res.innerHTML = "Up to 95% Effective. Take the pill immediately for best results. 💊"; showM("जल्दी लो, अभी टाइम है! ⏳"); }
+            else if(h <= 48) { res.innerHTML = "Up to 85% Effective. Take it as soon as possible. ⏳"; showM("देर मत करो, जल्दी लो! 🏃‍♀️"); }
+            else if(h <= 72) { res.innerHTML = "Efficacy drops to 58%. It might still work, but consult a doctor if possible. 🩺"; showM("इफेक्टिवनेस कम हो गई है! 🥺"); }
+            else { res.innerHTML = "Over 72 hours. Standard emergency pills may not work. Contact a gynecologist immediately for alternatives (like Copper IUD). 🚨"; showM("डॉक्टर से बात करना सबसे सही है! 👩‍⚕️"); }
+        }
+        setTimeout(()=>showM("कोई इमरजेंसी है? मैं मदद करूंगी! 🚨"), 500);
+    </script>
+</body>
+</html>
