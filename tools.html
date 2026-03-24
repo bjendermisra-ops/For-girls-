@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Health Tools | स्वास्थ्य उपकरण</title>
+    <meta name="description" content="A complete directory of female health, pregnancy, and wellness tools.">
+    <meta name="theme-color" content="#FF5A7A">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        /* Shared Premium Variables from Home Page */
+        :root {
+            --bg-color: #FEF1F6;
+            --primary-color: #FF5A7A;
+            --primary-grad: linear-gradient(135deg, #FF5A7A, #FF7696);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #2B2B32;
+            --text-muted: #8E8D93;
+            --shadow-soft: 0 15px 40px rgba(255, 90, 122, 0.08);
+            --shadow-hover: 0 20px 50px rgba(255, 90, 122, 0.15);
+            --modal-bg: rgba(0,0,0,0.5);
+            --border-radius-lg: 35px;
+        }
+
+        /* NEW THEMES SYNCED WITH APP */
+        body.theme-lavender {
+            --bg-color: #F4F1FE;
+            --primary-color: #9D7AFF;
+            --primary-grad: linear-gradient(135deg, #9D7AFF, #BCA1FF);
+            --shadow-soft: 0 15px 40px rgba(157, 122, 255, 0.15);
+            --shadow-hover: 0 20px 50px rgba(157, 122, 255, 0.25);
+        }
+        body.theme-mint {
+            --bg-color: #F0FEF6;
+            --primary-color: #4ADE80;
+            --primary-grad: linear-gradient(135deg, #4ADE80, #86EFAC);
+            --shadow-soft: 0 15px 40px rgba(74, 222, 128, 0.15);
+            --shadow-hover: 0 20px 50px rgba(74, 222, 128, 0.25);
+        }
+        body.theme-peach {
+            --bg-color: #FEF4F1;
+            --primary-color: #FF8A65;
+            --primary-grad: linear-gradient(135deg, #FF8A65, #FFAB91);
+            --shadow-soft: 0 15px 40px rgba(255, 138, 101, 0.15);
+            --shadow-hover: 0 20px 50px rgba(255, 138, 101, 0.25);
+        }
+
+        body.preg-mode {
+            --bg-color: #F1F8FE;
+            --primary-color: #5AA1FF;
+            --primary-grad: linear-gradient(135deg, #5AA1FF, #76CEFF);
+            --shadow-soft: 0 15px 40px rgba(90, 161, 255, 0.1);
+            --shadow-hover: 0 20px 50px rgba(90, 161, 255, 0.2);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            background: var(--bg-color) !important;
+            color: var(--text-dark);
+            padding-bottom: calc(120px + env(safe-area-inset-bottom));
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+            margin: 0;
+        }
+
+        /* Canvas Background */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Decorative Background Blobs Synced */
+        .bg-blob { position: fixed; border-radius: 50%; filter: blur(60px); opacity: 0.5; z-index: -1; pointer-events: none;}
+        .blob-1 { width: 200px; height: 200px; background: var(--primary-color); top: -50px; left: -50px; animation: float-blob 8s infinite alternate ease-in-out, pulse-blob 6s infinite alternate; }
+        .blob-2 { width: 250px; height: 250px; background: #FFD1E3; bottom: 100px; right: -50px; animation: float-blob 10s infinite alternate-reverse ease-in-out, pulse-blob 7s infinite alternate; animation-delay: -3s; }
+        
+        @keyframes float-blob {
+            0% { transform: translateY(0) scale(1) rotate(0deg); }
+            100% { transform: translateY(40px) scale(1.15) rotate(15deg); }
+        }
+        @keyframes pulse-blob {
+            0% { opacity: 0.4; filter: blur(60px); }
+            100% { opacity: 0.7; filter: blur(40px); }
+        }
+
+        /* Top Header Glassmorphism */
+        .top-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: calc(15px + env(safe-area-inset-top)) 20px 20px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.6);
+            animation: slideDownFade 0.8s cubic-bezier(0.1, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideDownFade {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+
+        .lang-toggle {
+            background: var(--card-bg);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .lang-toggle:hover, .lang-toggle:active {
+            background: var(--primary-color);
+            color: #fff;
+            transform: scale(0.95);
+        }
+
+        /* Search Bar Setup */
+        .search-container { position: relative; }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border-radius: 25px;
+            border: 1.5px solid #EAEAEA;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: var(--shadow-soft);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            background: #fff;
+            box-shadow: 0 0 20px rgba(255, 90, 122, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        /* Category Header */
+        .category-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 30px 0 15px 0;
+            padding-left: 15px;
+            position: relative;
+            animation: slideUpFade 0.6s both;
+        }
+        
+        .category-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10%;
+            height: 80%;
+            width: 5px;
+            background: var(--primary-grad);
+            border-radius: 10px;
+        }
+
+        /* Tool Card - Matching index.html card style */
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 22px 18px;
+            height: 100%;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            animation: slideUpFade 0.6s cubic-bezier(0.1, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(40px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+
+        .tool-icon-wrapper {
+            width: 55px;
+            height: 55px;
+            background: var(--bg-color);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover .tool-icon-wrapper {
+            background: var(--primary-grad);
+            color: white;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .info-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 0;
+            opacity: 0.6;
+        }
+
+        .info-btn:hover {
+            color: var(--primary-color);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .tool-name {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            color: var(--text-dark);
+            letter-spacing: -0.3px;
+        }
+
+        .tool-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            flex-grow: 1;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        /* Themed Open Button */
+        .open-btn {
+            background: var(--primary-grad);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(255, 90, 122, 0.3);
+            display: inline-block;
+        }
+
+        .open-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255, 90, 122, 0.4); }
+        .open-btn:active { transform: scale(0.94) translateY(2px); box-shadow: 0 4px 10px rgba(255, 90, 122, 0.2); }
+        body.preg-mode .open-btn {box-shadow: 0 8px 25px rgba(90, 161, 255, 0.35);}
+
+        /* Magic Particles / Sparkles CSS */
+        .magic-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999999;
+            animation: particle-fly 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            font-size: 20px;
+        }
+
+        @keyframes particle-fly {
+            0% { opacity: 1; transform: translate(0, 0) scale(0.5); }
+            50% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1.2); }
+            100% { opacity: 0; transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) * 1.5)) scale(0.8); }
+        }
+
+        /* Modal Customization Synced with app */
+        .modal-backdrop {
+            background-color: var(--modal-bg) !important;
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            border-radius: 40px 40px 0 0;
+            border: none;
+            background: #fff;
+            transform: translateY(100%);
+            animation: modalSlideUp 0.4s cubic-bezier(0.1, 1, 0.3, 1) forwards;
+        }
+        .modal-dialog {
+            margin: auto 0 0 0;
+            display: flex;
+            align-items: flex-end;
+            min-height: 100%;
+        }
+        @keyframes modalSlideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-header { border-bottom: none; padding: 30px 25px 10px 25px; }
+        .modal-title { font-weight: 900; color: var(--text-dark); display: flex; align-items: center; gap: 10px; font-size: 22px;}
+        .modal-body { padding: 10px 25px 35px 25px; }
+        
+        .info-section {
+            background: var(--bg-color);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .info-section h6 { color: var(--primary-color); font-weight: 800; font-size: 15px; margin-bottom: 6px; }
+        .info-section p { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 0; }
+        
+        .important-note { background: #FFF5F7; border-left: 4px solid #FF426A; border-radius: 10px 20px 20px 10px;}
+        .important-note h6 { color: #FF426A; }
+
+        /* 🔥 PREMIUM NAVBAR BASE FROM HOME PAGE 🔥 */
+        .navbar-base { 
+            position:fixed; 
+            bottom: calc(20px + env(safe-area-inset-bottom)); 
+            left: 20px; right: 20px; height: 75px; 
+            display:flex; justify-content:space-around; align-items:center; 
+            background:rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            z-index:9999; border-radius: 40px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1); 
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .nav-link { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            text-decoration: none; width: 60px; height: 100%; cursor: pointer; color: #B0AFB5; position: relative;
+        }
+        .nav-link.active { color: var(--primary-color); }
+        .nav-link .icon { width:26px; height:26px; margin-bottom: 2px; position: relative;}
+        .nav-link .icon svg { stroke: currentColor; fill:none; stroke-width: 2.2; stroke-linecap: round; width:100%; height:100%; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+        .nav-link.active .icon svg { transform: translateY(-4px) scale(1.15); filter: drop-shadow(0 4px 6px rgba(255, 90, 122, 0.3));}
+        
+        .nav-link.active::after { 
+            content: ''; position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); 
+            width: 6px; height: 6px; background: var(--primary-color); border-radius: 50%; 
+            box-shadow: 0 2px 5px rgba(255, 90, 122, 0.5); animation: fade 0.3s; 
+        }
+
+        .nav-link.center-btn { 
+            transform: translateY(-20px); background: var(--primary-grad); 
+            width: 65px; height: 65px; border-radius: 50%; 
+            box-shadow: 0 10px 25px rgba(255, 90, 122, 0.4); border: 4px solid var(--bg-color); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .nav-link.center-btn:hover { transform: translateY(-23px) scale(1.05); }
+        .nav-link.center-btn:active { transform: translateY(-18px) scale(0.95); }
+        .nav-link.center-btn .icon { margin:0; width: 28px; height: 28px;}
+        .nav-link.center-btn .icon svg { stroke: #fff;}
+        .nav-link.center-btn::after { display: none; }
+        body.preg-mode .nav-link.center-btn { background: linear-gradient(135deg, #5AA1FF, #76CEFF); box-shadow: 0 10px 25px rgba(90, 161, 255, 0.4); border-color: #F1F8FE;}
+
+        @keyframes fade {from {opacity:0} to {opacity:1}}
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; display: none; animation: slideUpFade 0.5s;}
+        .empty-state i { font-size: 50px; color: var(--text-muted); margin-bottom: 20px; opacity: 0.5;}
+        .empty-state h5 { font-weight: 800; color: var(--text-dark); font-size: 22px;}
+        .empty-state p { font-weight: 600; color: var(--text-muted); font-size: 15px;}
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Elements Synced -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-top-row">
+            <h1 class="page-title" id="ui-title">Health Tools</h1>
+            <button class="lang-toggle" id="langToggleBtn" onclick="toggleLanguage(event)">English | हिंदी</button>
+        </div>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search tools..." autocomplete="off">
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="container mb-4" id="toolsContainer" style="margin-top: 10px;">
+        <!-- Content will be injected by JavaScript -->
+    </main>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+        <i class="fas fa-search-minus"></i>
+        <h5 id="ui-no-results">No tools found</h5>
+        <p id="ui-try-again">Try searching with different keywords.</p>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i id="modalIcon" class="fas fa-info-circle text-primary"></i> 
+                        <span id="modalName">Tool Name</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: var(--bg-color); border-radius: 50%; padding: 12px;"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalDesc" class="text-muted fw-bold mb-4" style="color: var(--text-dark) !important;">Description goes here.</p>
+                    
+                    <div class="info-section">
+                        <h6 id="ui-how-to-use">How to use</h6>
+                        <p id="modalHow">Instruction</p>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h6 id="ui-when-to-use">When to use</h6>
+                        <p id="modalWhen">Timing</p>
+                    </div>
+
+                    <div class="info-section">
+                        <h6 id="ui-who-should-use">Who should use</h6>
+                        <p id="modalWho">Target audience</p>
+                    </div>
+
+                    <div class="info-section important-note">
+                        <h6 id="ui-important-note">Important Note</h6>
+                        <p id="modalNote">Medical disclaimer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🌟 SYNCED BOTTOM NAVBAR 🌟 -->
+    <div class="navbar-base">
+        <a onclick="location.href='index.html'" class="nav-link"><div class="icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div></a>
+        <a onclick="location.href='calendar.html'" class="nav-link"><div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div></a>
+        <a onclick="location.href='symptoms.html'" class="nav-link center-btn"><div class="icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></a>
+        <a onclick="location.href='tools.html'" class="nav-link active"><div class="icon"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div></a>
+        <a onclick="location.href='settings.html'" class="nav-link"><div class="icon"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg></div></a>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Application Logic -->
+    <script>
+        // Global Theme & Language State Sync with Home Page
+        let configMem = JSON.parse(localStorage.getItem('appConfig')) || { lang: 'hi', pregMode: false, theme: 'default' };
+        let currentLang = configMem.lang || 'en';
+
+        // Apply Global Theme
+        function applyGlobalTheme() {
+            document.body.className = '';
+            if(configMem.theme && configMem.theme !== 'default') {
+                document.body.classList.add('theme-' + configMem.theme);
+            }
+            if(configMem.pregMode) {
+                document.body.classList.add('preg-mode');
+            }
+        }
+
+        // Particle System for Cuteness ✨
+        function createParticles(x, y) {
+            const numParticles = 8;
+            for(let i=0; i<numParticles; i++) {
+                let p = document.createElement('div');
+                p.className = 'magic-particle';
+                p.innerText = Math.random() > 0.5 ? '💖' : '✨';
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                p.style.setProperty('--dx', (Math.random() * 100 - 50) + 'px');
+                p.style.setProperty('--dy', (Math.random() * -100 - 20) + 'px');
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1200);
+            }
+        }
+
+        // UI Dictionary
+        const uiDict = {
+            en: {
+                title: "Health Tools",
+                search: "Search tools...",
+                noResults: "No tools found",
+                tryAgain: "Try searching with different keywords.",
+                btnOpen: "Open",
+                howToUse: "How to use",
+                whenToUse: "When to use",
+                whoShouldUse: "Who should use",
+                importantNote: "Important Note",
+                cat_period: "Period Tools",
+                cat_pregnancy: "Pregnancy Tools",
+                cat_health: "Health Tools",
+                cat_mental: "Mental Health Tools",
+                cat_lifestyle: "Lifestyle Tools",
+                cat_safety: "Safety Tools",
+                cat_emergency: "Emergency Tools",
+                cat_ai: "AI Tools"
+            },
+            hi: {
+                title: "स्वास्थ्य उपकरण",
+                search: "उपकरण खोजें...",
+                noResults: "कोई उपकरण नहीं मिला",
+                tryAgain: "अन्य शब्दों के साथ खोजने का प्रयास करें।",
+                btnOpen: "खोलें",
+                howToUse: "कैसे उपयोग करें",
+                whenToUse: "कब उपयोग करें",
+                whoShouldUse: "किसे उपयोग करना चाहिए",
+                importantNote: "महत्वपूर्ण नोट",
+                cat_period: "मासिक धर्म उपकरण",
+                cat_pregnancy: "गर्भावस्था उपकरण",
+                cat_health: "स्वास्थ्य उपकरण",
+                cat_mental: "मानसिक स्वास्थ्य उपकरण",
+                cat_lifestyle: "जीवनशैली उपकरण",
+                cat_safety: "सुरक्षा उपकरण",
+                cat_emergency: "आपातकालीन उपकरण",
+                cat_ai: "AI उपकरण"
+            }
+        };
+
+        // Tools Data Array (All 51 Tools Preserved exactly as requested)
+        const toolsData =[
+            // PERIOD TOOLS
+            { id: "cycle-calculator", cat: "period", icon: "fas fa-sync-alt", url: "tools/cycle-calculator.html", en: { name: "Cycle Calculator", desc: "Predict your next period dates accurately.", how: "Enter your last period date and average cycle length.", when: "Anytime during your cycle.", who: "Women tracking their menstrual cycles.", note: "Predictions are estimates based on your averages." }, hi: { name: "मासिक धर्म चक्र कैलकुलेटर", desc: "अपने अगले पीरियड की सटीक भविष्यवाणी करें।", how: "अपनी आखिरी माहवारी की तारीख और औसत चक्र लंबाई दर्ज करें।", when: "अपने चक्र के दौरान कभी भी।", who: "मासिक धर्म को ट्रैक करने वाली महिलाएँ।", note: "भविष्यवाणियां आपके औसत पर आधारित अनुमान हैं।" } },
+            { id: "ovulation", cat: "period", icon: "fas fa-egg", url: "tools/ovulation.html", en: { name: "Ovulation Calculator", desc: "Find your ovulation day to plan or prevent pregnancy.", how: "Input last period and cycle length.", when: "Before your expected fertile window.", who: "Women trying to conceive or avoiding pregnancy.", note: "Ovulation can vary due to stress or health changes." }, hi: { name: "ओव्यूलेशन कैलकुलेटर", desc: "गर्भावस्था की योजना बनाने या रोकने के लिए ओव्यूलेशन का दिन खोजें।", how: "अंतिम अवधि और चक्र की लंबाई दर्ज करें।", when: "आपकी अपेक्षित फर्टाइल विंडो से पहले।", who: "गर्भधारण करने की कोशिश कर रही या गर्भावस्था से बचने वाली महिलाएँ।", note: "तनाव या स्वास्थ्य में बदलाव के कारण ओव्यूलेशन अलग हो सकता है।" } },
+            { id: "fertility", cat: "period", icon: "fas fa-seedling", url: "tools/fertility.html", en: { name: "Fertility Window", desc: "Calculate your most fertile days in the month.", how: "Provide cycle details to get a 6-day window.", when: "When planning a family.", who: "Couples trying to conceive.", note: "Sperm can live up to 5 days inside the female body." }, hi: { name: "फर्टिलिटी विंडो", desc: "महीने में अपने सबसे उपजाऊ दिनों की गणना करें।", how: "6 दिन की विंडो पाने के लिए चक्र विवरण दें।", when: "जब परिवार की योजना बना रहे हों।", who: "गर्भधारण की कोशिश कर रहे जोड़े।", note: "शुक्राणु महिला शरीर के अंदर 5 दिनों तक जीवित रह सकते हैं।" } },
+            { id: "safe-days", cat: "period", icon: "fas fa-shield-alt", url: "tools/safe-days.html", en: { name: "Safe Days Calculator", desc: "Identify days with the lowest chance of pregnancy.", how: "Enter exact cycle history.", when: "For natural family planning.", who: "Women with highly regular cycles.", note: "Not a 100% reliable method of contraception." }, hi: { name: "सुरक्षित दिन कैलकुलेटर", desc: "गर्भावस्था की सबसे कम संभावना वाले दिनों को पहचानें।", how: "सटीक चक्र इतिहास दर्ज करें।", when: "प्राकृतिक परिवार नियोजन के लिए।", who: "अत्यधिक नियमित चक्र वाली महिलाएँ।", note: "यह गर्भनिरोधक का 100% विश्वसनीय तरीका नहीं है।" } },
+            { id: "period-delay", cat: "period", icon: "fas fa-hourglass-half", url: "tools/period-delay.html", en: { name: "Period Delay Checker", desc: "Analyze reasons for a late period.", how: "Answer questions about symptoms, stress, and lifestyle.", when: "If your period is late by 3+ days.", who: "Women experiencing delayed menstruation.", note: "If sexually active, take a pregnancy test first." }, hi: { name: "पीरियड देरी चेकर", desc: "देरी से आने वाले पीरियड के कारणों का विश्लेषण करें।", how: "लक्षणों, तनाव और जीवनशैली के बारे में सवालों के जवाब दें।", when: "यदि आपका पीरियड 3+ दिन लेट है।", who: "देरी से माहवारी का अनुभव करने वाली महिलाएँ।", note: "यदि यौन रूप से सक्रिय हैं, तो पहले गर्भावस्था परीक्षण करें।" } },
+            { id: "period-regularity", cat: "period", icon: "fas fa-chart-line", url: "tools/period-regularity.html", en: { name: "Period Regularity Checker", desc: "Check if your cycle variation is healthy.", how: "Input past 3-6 cycle lengths.", when: "To monitor hormonal health.", who: "Teens and women tracking cycle health.", note: "Variations up to 7 days are generally normal." }, hi: { name: "पीरियड नियमितता चेकर", desc: "जांचें कि क्या आपके चक्र में बदलाव स्वस्थ है।", how: "पिछले 3-6 चक्रों की लंबाई दर्ज करें।", when: "हार्मोनल स्वास्थ्य की निगरानी के लिए।", who: "किशोर और महिलाएँ जो चक्र स्वास्थ्य को ट्रैक कर रही हैं।", note: "7 दिनों तक के बदलाव आम तौर पर सामान्य होते हैं।" } },
+            { id: "flow-tracker", cat: "period", icon: "fas fa-tint", url: "tools/flow-tracker.html", en: { name: "Flow Tracker Tool", desc: "Monitor menstrual bleeding intensity.", how: "Log pad/tampon usage daily.", when: "During your menstrual bleeding days.", who: "Women monitoring for heavy or light flow issues.", note: "Soaking a pad per hour requires medical attention." }, hi: { name: "फ्लो ट्रैकर टूल", desc: "मासिक धर्म के रक्तस्राव की तीव्रता की निगरानी करें।", how: "प्रतिदिन पैड/टैम्पोन उपयोग लॉग करें।", when: "आपके मासिक धर्म के रक्तस्राव के दिनों में।", who: "भारी या हल्के प्रवाह की समस्याओं की निगरानी करने वाली महिलाएँ।", note: "हर घंटे एक पैड भीगने पर चिकित्सा सहायता की आवश्यकता होती है।" } },
+            { id: "symptoms-tracker", cat: "period", icon: "fas fa-clipboard-list", url: "tools/symptoms-tracker.html", en: { name: "Symptoms Tracker", desc: "Log cramps, acne, and PMS symptoms.", how: "Select symptoms experienced daily.", when: "Throughout your cycle, especially luteal phase.", who: "Women tracking PMS or PMDD.", note: "Severe pain is not normal; consult a doctor." }, hi: { name: "लक्षण ट्रैकर", desc: "ऐंठन, मुँहासे और पीएमएस लक्षणों को लॉग करें।", how: "प्रतिदिन अनुभव किए गए लक्षणों का चयन करें।", when: "पूरे चक्र के दौरान, विशेषकर ल्यूटियल चरण में।", who: "पीएमएस या पीएमडीडी को ट्रैक करने वाली महिलाएँ।", note: "गंभीर दर्द सामान्य नहीं है; डॉक्टर से परामर्श लें।" } },
+
+            // PREGNANCY TOOLS
+            { id: "pregnancy-week", cat: "pregnancy", icon: "fas fa-baby", url: "tools/pregnancy-week.html", en: { name: "Pregnancy Week Calc", desc: "Track which week of pregnancy you are in.", how: "Enter LMP or conception date.", when: "Throughout pregnancy.", who: "Expectant mothers.", note: "Pregnancy is calculated as 40 weeks from LMP." }, hi: { name: "गर्भावस्था सप्ताह कैलकुलेटर", desc: "ट्रैक करें कि आप गर्भावस्था के किस सप्ताह में हैं।", how: "एलएमपी या गर्भधारण की तारीख दर्ज करें।", when: "पूरी गर्भावस्था के दौरान।", who: "गर्भवती माताएं।", note: "गर्भावस्था की गणना एलएमपी से 40 सप्ताह के रूप में की जाती है।" } },
+            { id: "due-date", cat: "pregnancy", icon: "fas fa-calendar-check", url: "tools/due-date.html", en: { name: "Due Date Calculator", desc: "Estimate your baby's arrival date.", how: "Provide LMP and average cycle length.", when: "Upon confirming pregnancy.", who: "Newly pregnant women.", note: "Only 4% of babies are born on their exact due date." }, hi: { name: "देय तिथि (Due Date) कैलकुलेटर", desc: "अपने बच्चे के आने की अनुमानित तारीख जानें।", how: "एलएमपी और औसत चक्र की लंबाई प्रदान करें।", when: "गर्भावस्था की पुष्टि होने पर।", who: "नव गर्भवती महिलाएँ।", note: "केवल 4% बच्चे अपनी सटीक देय तिथि पर पैदा होते हैं।" } },
+            { id: "baby-growth", cat: "pregnancy", icon: "fas fa-ruler", url: "tools/baby-growth.html", en: { name: "Baby Growth Tracker", desc: "See your baby's size compared to fruits.", how: "Select your current pregnancy week.", when: "Weekly during pregnancy.", who: "Expectant parents.", note: "Growth rates vary for every baby." }, hi: { name: "शिशु विकास ट्रैकर", desc: "फलों की तुलना में अपने बच्चे का आकार देखें।", how: "अपने वर्तमान गर्भावस्था सप्ताह का चयन करें।", when: "गर्भावस्था के दौरान साप्ताहिक।", who: "माता-पिता बनने वाले लोग।", note: "विकास दर हर बच्चे के लिए भिन्न होती है।" } },
+            { id: "trimester", cat: "pregnancy", icon: "fas fa-chart-pie", url: "tools/trimester.html", en: { name: "Trimester Calculator", desc: "Know your exact trimester timeline.", how: "Input due date or LMP.", when: "To plan appointments and milestones.", who: "Pregnant women.", note: "Pregnancy has three trimesters, roughly 13 weeks each." }, hi: { name: "त्रैमासिक (Trimester) कैलकुलेटर", desc: "अपनी सटीक त्रैमासिक समयरेखा जानें।", how: "देय तिथि या एलएमपी दर्ज करें।", when: "नियुक्तियों और मील के पत्थर की योजना बनाने के लिए।", who: "गर्भवती महिलाएँ।", note: "गर्भावस्था के तीन तिमाही होते हैं, लगभग 13 सप्ताह प्रत्येक।" } },
+            { id: "weight-gain", cat: "pregnancy", icon: "fas fa-weight", url: "tools/weight-gain.html", en: { name: "Weight Gain Calculator", desc: "Track healthy pregnancy weight gain.", how: "Enter pre-pregnancy BMI and current weight.", when: "Monthly check-ins.", who: "Pregnant women monitoring health.", note: "Always follow your doctor's specific weight guidelines." }, hi: { name: "वजन वृद्धि कैलकुलेटर", desc: "स्वस्थ गर्भावस्था वजन बढ़ने को ट्रैक करें।", how: "गर्भावस्था से पहले का बीएमआई और वर्तमान वजन दर्ज करें।", when: "मासिक जांच।", who: "स्वास्थ्य की निगरानी करने वाली गर्भवती महिलाएँ।", note: "हमेशा अपने डॉक्टर के विशिष्ट वजन दिशानिर्देशों का पालन करें।" } },
+            { id: "conception", cat: "pregnancy", icon: "fas fa-heart", url: "tools/conception.html", en: { name: "Conception Calculator", desc: "Find out when you likely conceived.", how: "Input your due date or ultrasound measurements.", when: "When curious about the date of conception.", who: "Pregnant women.", note: "Conception dates are always an estimate." }, hi: { name: "गर्भधारण कैलकुलेटर", desc: "पता करें कि आपने संभवतः कब गर्भधारण किया था।", how: "अपनी देय तिथि या अल्ट्रासाउंड माप दर्ज करें।", when: "गर्भधारण की तारीख जानने के लिए उत्सुक होने पर।", who: "गर्भवती महिलाएँ।", note: "गर्भधारण की तारीखें हमेशा एक अनुमान होती हैं।" } },
+            { id: "preg-risk", cat: "pregnancy", icon: "fas fa-exclamation-triangle", url: "tools/preg-risk.html", en: { name: "Pregnancy Risk Checker", desc: "Evaluate common pregnancy symptoms.", how: "Answer questions about bleeding, pain, or swelling.", when: "If experiencing unusual symptoms.", who: "Pregnant women feeling unwell.", note: "This does not replace emergency medical care." }, hi: { name: "गर्भावस्था जोखिम चेकर", desc: "सामान्य गर्भावस्था के लक्षणों का मूल्यांकन करें।", how: "रक्तस्राव, दर्द या सूजन के बारे में सवालों के जवाब दें।", when: "यदि असामान्य लक्षणों का अनुभव हो रहा है।", who: "अस्वस्थ महसूस करने वाली गर्भवती महिलाएँ।", note: "यह आपातकालीन चिकित्सा देखभाल का स्थान नहीं लेता है।" } },
+            { id: "preg-food", cat: "pregnancy", icon: "fas fa-apple-alt", url: "tools/preg-food.html", en: { name: "Pregnancy Food Guide", desc: "Check safe and unsafe foods.", how: "Search for a food item to see safety status.", when: "Before eating uncertain foods.", who: "Pregnant women planning meals.", note: "Avoid raw fish, unpasteurized dairy, and excess caffeine." }, hi: { name: "गर्भावस्था आहार गाइड", desc: "सुरक्षित और असुरक्षित खाद्य पदार्थों की जांच करें।", how: "सुरक्षा स्थिति देखने के लिए किसी खाद्य पदार्थ की खोज करें।", when: "अनिश्चित खाद्य पदार्थ खाने से पहले।", who: "भोजन की योजना बनाने वाली गर्भवती महिलाएँ।", note: "कच्ची मछली, अपाश्चुरीकृत डेयरी और अतिरिक्त कैफीन से बचें।" } },
+
+            // HEALTH TOOLS
+            { id: "bmi", cat: "health", icon: "fas fa-weight-hanging", url: "tools/bmi.html", en: { name: "BMI Calculator", desc: "Check your Body Mass Index.", how: "Enter height and weight.", when: "For general health screening.", who: "Anyone tracking fitness.", note: "BMI does not account for muscle mass." }, hi: { name: "बीएमआई कैलकुलेटर", desc: "अपने बॉडी मास इंडेक्स की जांच करें।", how: "ऊंचाई और वजन दर्ज करें।", when: "सामान्य स्वास्थ्य जांच के लिए।", who: "फिटनेस ट्रैक करने वाला कोई भी व्यक्ति।", note: "बीएमआई मांसपेशियों के द्रव्यमान का हिसाब नहीं रखता है।" } },
+            { id: "water", cat: "health", icon: "fas fa-glass-water", url: "tools/water.html", en: { name: "Water Intake Calculator", desc: "Calculate daily hydration needs.", how: "Input weight and activity level.", when: "To set daily goals.", who: "Everyone.", note: "Requirements increase in hot weather or during exercise." }, hi: { name: "पानी का सेवन कैलकुलेटर", desc: "दैनिक जलयोजन (हाइड्रेशन) आवश्यकताओं की गणना करें।", how: "वजन और गतिविधि स्तर दर्ज करें।", when: "दैनिक लक्ष्य निर्धारित करने के लिए।", who: "हर कोई।", note: "गर्म मौसम या व्यायाम के दौरान आवश्यकताएं बढ़ जाती हैं।" } },
+            { id: "sleep", cat: "health", icon: "fas fa-bed", url: "tools/sleep.html", en: { name: "Sleep Calculator", desc: "Find the best time to sleep or wake up.", how: "Enter desired wake time to calculate sleep cycles.", when: "Planning a good night's sleep.", who: "People with fatigue or irregular routines.", note: "Most adults need 4-5 complete 90-minute sleep cycles." }, hi: { name: "नींद कैलकुलेटर", desc: "सोने या जागने का सबसे अच्छा समय खोजें।", how: "नींद चक्र की गणना करने के लिए जागने का समय दर्ज करें।", when: "रात की अच्छी नींद की योजना बनाते समय।", who: "थकान या अनियमित दिनचर्या वाले लोग।", note: "अधिकांश वयस्कों को 4-5 पूर्ण 90-मिनट के नींद चक्र की आवश्यकता होती है।" } },
+            { id: "iron", cat: "health", icon: "fas fa-magnet", url: "tools/iron.html", en: { name: "Iron Level Tracker", desc: "Monitor anemia risk symptoms.", how: "Log fatigue, dizziness, and period flow.", when: "If feeling constantly exhausted.", who: "Women with heavy periods.", note: "Only a blood test can confirm iron deficiency." }, hi: { name: "आयरन स्तर ट्रैकर", desc: "एनीमिया जोखिम के लक्षणों की निगरानी करें।", how: "थकान, चक्कर आना और अवधि प्रवाह को लॉग करें।", when: "यदि लगातार थकावट महसूस हो रही हो।", who: "भारी माहवारी वाली महिलाएँ।", note: "केवल रक्त परीक्षण ही आयरन की कमी की पुष्टि कर सकता है।" } },
+            { id: "pcos", cat: "health", icon: "fas fa-user-md", url: "tools/pcos.html", en: { name: "PCOS Risk Checker", desc: "Screen for PCOS symptoms.", how: "Answer questions on hair growth, acne, and cycles.", when: "If cycles are highly irregular.", who: "Women suspecting hormonal imbalances.", note: "This tool provides a risk assessment, not a diagnosis." }, hi: { name: "पीसीओएस (PCOS) जोखिम चेकर", desc: "पीसीओएस लक्षणों की जांच करें।", how: "बालों के विकास, मुँहासे और चक्रों पर सवालों के जवाब दें।", when: "यदि चक्र अत्यधिक अनियमित हैं।", who: "हार्मोनल असंतुलन का संदेह करने वाली महिलाएँ।", note: "यह उपकरण जोखिम मूल्यांकन प्रदान करता है, निदान नहीं।" } },
+            { id: "hormone", cat: "health", icon: "fas fa-dna", url: "tools/hormone.html", en: { name: "Hormone Health Checker", desc: "Understand hormone fluctuations.", how: "Log daily physical and emotional changes.", when: "To map patterns over a month.", who: "Women analyzing mood swings or physical changes.", note: "Hormones fluctuate naturally across the menstrual cycle." }, hi: { name: "हार्मोन स्वास्थ्य चेकर", desc: "हार्मोन के उतार-चढ़ाव को समझें।", how: "दैनिक शारीरिक और भावनात्मक परिवर्तनों को लॉग करें।", when: "एक महीने में पैटर्न मैप करने के लिए।", who: "मूड स्विंग या शारीरिक परिवर्तनों का विश्लेषण करने वाली महिलाएँ।", note: "मासिक धर्म चक्र में हार्मोन स्वाभाविक रूप से उतार-चढ़ाव करते हैं।" } },
+            { id: "calorie", cat: "health", icon: "fas fa-fire", url: "tools/calorie.html", en: { name: "Calorie Calculator", desc: "Find daily maintenance calories.", how: "Enter age, gender, height, weight, activity.", when: "Planning a diet.", who: "Individuals managing weight.", note: "Caloric needs change during menstruation and pregnancy." }, hi: { name: "कैलोरी कैलकुलेटर", desc: "दैनिक रखरखाव कैलोरी खोजें।", how: "आयु, लिंग, ऊंचाई, वजन, गतिविधि दर्ज करें।", when: "आहार की योजना बनाते समय।", who: "वजन प्रबंधित करने वाले व्यक्ति।", note: "मासिक धर्म और गर्भावस्था के दौरान कैलोरी की जरूरतें बदल जाती हैं।" } },
+            { id: "bp", cat: "health", icon: "fas fa-heartbeat", url: "tools/bp.html", en: { name: "Blood Pressure Checker", desc: "Log and interpret BP readings.", how: "Input systolic and diastolic numbers.", when: "After measuring BP at home.", who: "Pregnant women or those with hypertension.", note: "Normal BP is generally around 120/80 mmHg." }, hi: { name: "रक्तचाप (BP) चेकर", desc: "बीपी रीडिंग लॉग करें और समझें।", how: "सिस्टोलिक और डायस्टोलिक संख्या दर्ज करें।", when: "घर पर बीपी मापने के बाद।", who: "गर्भवती महिलाएँ या उच्च रक्तचाप वाले लोग।", note: "सामान्य बीपी आम तौर पर 120/80 mmHg के आसपास होता है।" } },
+            { id: "sugar", cat: "health", icon: "fas fa-cubes", url: "tools/sugar.html", en: { name: "Sugar Risk Checker", desc: "Assess risk for diabetes/GD.", how: "Answer lifestyle and family history questions.", when: "Routine health check.", who: "Women at risk of Gestational Diabetes.", note: "Consult a doctor for an HbA1c test." }, hi: { name: "शुगर जोखिम चेकर", desc: "मधुमेह/जीडी के जोखिम का आकलन करें।", how: "जीवनशैली और पारिवारिक इतिहास के सवालों के जवाब दें।", when: "नियमित स्वास्थ्य जांच।", who: "गर्भावधि मधुमेह के जोखिम वाली महिलाएँ।", note: "HbA1c परीक्षण के लिए डॉक्टर से परामर्श लें।" } },
+
+            // MENTAL HEALTH TOOLS
+            { id: "mood", cat: "mental", icon: "fas fa-smile", url: "tools/mood.html", en: { name: "Mood Tracker", desc: "Record daily emotions.", how: "Select emojis representing your daily mood.", when: "Daily reflection.", who: "Anyone focusing on emotional well-being.", note: "Helps identify triggers over time." }, hi: { name: "मूड ट्रैकर", desc: "दैनिक भावनाओं को रिकॉर्ड करें।", how: "अपने दैनिक मूड का प्रतिनिधित्व करने वाले इमोजी चुनें।", when: "दैनिक प्रतिबिंब।", who: "कोई भी जो भावनात्मक भलाई पर ध्यान केंद्रित कर रहा है।", note: "समय के साथ ट्रिगर्स की पहचान करने में मदद करता है।" } },
+            { id: "stress", cat: "mental", icon: "fas fa-brain", url: "tools/stress.html", en: { name: "Stress Checker", desc: "Measure current stress levels.", how: "Complete a brief psychological questionnaire.", when: "Feeling overwhelmed.", who: "Women balancing heavy workloads or personal issues.", note: "Chronic stress affects menstrual regularity." }, hi: { name: "तनाव चेकर", desc: "वर्तमान तनाव के स्तर को मापें।", how: "एक संक्षिप्त मनोवैज्ञानिक प्रश्नावली पूरी करें।", when: "अत्यधिक बोझ महसूस होने पर।", who: "भारी कार्यभार या व्यक्तिगत मुद्दों को संतुलित करने वाली महिलाएँ।", note: "पुराना तनाव मासिक धर्म की नियमितता को प्रभावित करता है।" } },
+            { id: "anxiety", cat: "mental", icon: "fas fa-wind", url: "tools/anxiety.html", en: { name: "Anxiety Checker", desc: "Evaluate anxiety symptoms.", how: "Rate frequency of worry or physical tension.", when: "Experiencing nervousness or panic.", who: "Individuals with anxiety concerns.", note: "Seek professional help for severe anxiety." }, hi: { name: "चिंता (Anxiety) चेकर", desc: "चिंता के लक्षणों का मूल्यांकन करें।", how: "चिंता या शारीरिक तनाव की आवृत्ति को रेट करें।", when: "घबराहट या घबराहट का अनुभव होने पर।", who: "चिंता की चिंताओं वाले व्यक्ति।", note: "गंभीर चिंता के लिए पेशेवर मदद लें।" } },
+            { id: "emotional", cat: "mental", icon: "fas fa-dove", url: "tools/emotional.html", en: { name: "Emotional Health Tracker", desc: "Journal and track mental state.", how: "Write short daily notes and tag emotions.", when: "Evening wind-down.", who: "Those practicing mindfulness.", note: "Journaling is proven to reduce psychological distress." }, hi: { name: "भावनात्मक स्वास्थ्य ट्रैकर", desc: "जर्नल करें और मानसिक स्थिति को ट्रैक करें।", how: "छोटे दैनिक नोट्स लिखें और भावनाओं को टैग करें।", when: "शाम को आराम करते समय।", who: "माइंडफुलनेस का अभ्यास करने वाले लोग।", note: "जर्नलिंग मनोवैज्ञानिक संकट को कम करने के लिए सिद्ध है।" } },
+            { id: "hormonal-mood", cat: "mental", icon: "fas fa-moon", url: "tools/hormonal-mood.html", en: { name: "Hormonal Mood Predictor", desc: "Forecast mood swings based on cycle.", how: "Syncs with cycle data to predict PMDD/PMS days.", when: "Planning the month ahead.", who: "Women sensitive to hormonal shifts.", note: "Progesterone drops can trigger depressive feelings before periods." }, hi: { name: "हार्मोनल मूड भविष्यवक्ता", desc: "चक्र के आधार पर मूड स्विंग का पूर्वानुमान लगाएं।", how: "PMDD/PMS दिनों की भविष्यवाणी करने के लिए चक्र डेटा के साथ सिंक करता है।", when: "आने वाले महीने की योजना बनाते समय।", who: "हार्मोनल बदलावों के प्रति संवेदनशील महिलाएँ।", note: "प्रोजेस्टेरोन की गिरावट अवधि से पहले उदास भावनाओं को ट्रिगर कर सकती है।" } },
+
+            // LIFESTYLE TOOLS
+            { id: "diet", cat: "lifestyle", icon: "fas fa-utensils", url: "tools/diet.html", en: { name: "Diet Planner", desc: "Cycle-synced nutrition guide.", how: "View food recommendations for your current phase.", when: "Grocery shopping or meal prepping.", who: "Women optimizing health through food.", note: "Iron-rich foods are crucial during menstruation." }, hi: { name: "आहार योजनाकार (Diet Planner)", desc: "चक्र-सिंक किया गया पोषण गाइड।", how: "अपने वर्तमान चरण के लिए भोजन की सिफारिशें देखें।", when: "किराने की खरीदारी या भोजन की तैयारी करते समय।", who: "भोजन के माध्यम से स्वास्थ्य को अनुकूलित करने वाली महिलाएँ।", note: "मासिक धर्म के दौरान आयरन से भरपूर खाद्य पदार्थ महत्वपूर्ण होते हैं।" } },
+            { id: "yoga", cat: "lifestyle", icon: "fas fa-child", url: "tools/yoga.html", en: { name: "Yoga Guide", desc: "Poses for cramp relief and fertility.", how: "Follow visual pose guides.", when: "Experiencing pain or stress.", who: "All fitness levels.", note: "Avoid inversions if you feel uncomfortable during periods." }, hi: { name: "योग गाइड", desc: "ऐंठन राहत और प्रजनन क्षमता के लिए मुद्राएं।", how: "दृश्य मुद्रा गाइड का पालन करें।", when: "दर्द या तनाव का अनुभव होने पर।", who: "सभी फिटनेस स्तर के लोग।", note: "यदि आप माहवारी के दौरान असहज महसूस करते हैं तो उलटे आसनों से बचें।" } },
+            { id: "workout", cat: "lifestyle", icon: "fas fa-dumbbell", url: "tools/workout.html", en: { name: "Workout Guide", desc: "Exercise matching your cycle phase.", how: "Check recommended intensity levels.", when: "Planning gym routines.", who: "Active women.", note: "Energy peaks during ovulation, perfect for HIIT." }, hi: { name: "कसरत (Workout) गाइड", desc: "आपके चक्र चरण से मेल खाने वाला व्यायाम।", how: "अनुशंसित तीव्रता स्तरों की जांच करें।", when: "जिम रूटीन की योजना बनाते समय।", who: "सक्रिय महिलाएँ।", note: "ओव्यूलेशन के दौरान ऊर्जा चरम पर होती है, जो HIIT के लिए एकदम सही है।" } },
+            { id: "skin", cat: "lifestyle", icon: "fas fa-spa", url: "tools/skin.html", en: { name: "Skin Care Guide", desc: "Manage hormonal acne breakouts.", how: "Track skin changes and get skincare tips.", when: "Daily skincare routine.", who: "Women prone to cyclic acne.", note: "Sebum production increases before your period." }, hi: { name: "त्वचा देखभाल गाइड", desc: "हार्मोनल मुँहासे ब्रेकआउट का प्रबंधन करें।", how: "त्वचा के बदलावों को ट्रैक करें और स्किनकेयर टिप्स प्राप्त करें।", when: "दैनिक स्किनकेयर रूटीन।", who: "चक्रीय मुँहासे वाली महिलाएँ।", note: "आपके पीरियड से पहले सीबम का उत्पादन बढ़ जाता है।" } },
+            { id: "hair", cat: "lifestyle", icon: "fas fa-cut", url: "tools/hair.html", en: { name: "Hair Care Guide", desc: "Track hormonal hair loss/growth.", how: "Log hair texture and shedding.", when: "Weekly wash days.", who: "Women noticing hair changes.", note: "Postpartum and PCOS can cause significant hair changes." }, hi: { name: "बाल देखभाल गाइड", desc: "हार्मोनल बालों के झड़ने/विकास को ट्रैक करें।", how: "बालों की बनावट और झड़ने को लॉग करें।", when: "साप्ताहिक धोने के दिनों में।", who: "बालों में बदलाव देखने वाली महिलाएँ।", note: "पोस्टपार्टम और पीसीओएस बालों में महत्वपूर्ण बदलाव ला सकते हैं।" } },
+            { id: "routine", cat: "lifestyle", icon: "fas fa-calendar-alt", url: "tools/routine.html", en: { name: "Healthy Routine Planner", desc: "Build habits around your cycle.", how: "Set daily tasks adapted to your energy.", when: "Morning planning.", who: "Anyone looking for structured routines.", note: "Consistency is key to habit building." }, hi: { name: "स्वस्थ दिनचर्या योजनाकार", desc: "अपने चक्र के अनुसार आदतें बनाएं।", how: "अपनी ऊर्जा के अनुकूल दैनिक कार्य निर्धारित करें।", when: "सुबह की योजना।", who: "कोई भी जो संरचित दिनचर्या की तलाश में है।", note: "आदत बनाने के लिए निरंतरता महत्वपूर्ण है।" } },
+
+            // SAFETY TOOLS
+            { id: "contraceptive", cat: "safety", icon: "fas fa-pills", url: "tools/contraceptive.html", en: { name: "Contraceptive Guide", desc: "Compare birth control methods.", how: "Read effectiveness and side effects.", when: "Choosing a family planning method.", who: "Sexually active women.", note: "Consult a gynecologist before starting any pill." }, hi: { name: "गर्भनिरोधक गाइड", desc: "जन्म नियंत्रण विधियों की तुलना करें।", how: "प्रभावशीलता और दुष्प्रभावों को पढ़ें।", when: "परिवार नियोजन विधि चुनते समय।", who: "यौन रूप से सक्रिय महिलाएँ।", note: "कोई भी गोली शुरू करने से पहले स्त्री रोग विशेषज्ञ से सलाह लें।" } },
+            { id: "emergency-pill", cat: "safety", icon: "fas fa-capsules", url: "tools/emergency-pill.html", en: { name: "Emergency Pill Guide", desc: "Calculate efficacy window for Plan B.", how: "Enter time of unprotected intercourse.", when: "Within 72 hours of unprotected sex.", who: "Women seeking emergency contraception.", note: "Efficacy decreases over time; act fast." }, hi: { name: "आपातकालीन पिल गाइड", desc: "प्लान बी के लिए प्रभावकारिता विंडो की गणना करें।", how: "असुरक्षित संभोग का समय दर्ज करें।", when: "असुरक्षित यौन संबंध के 72 घंटों के भीतर।", who: "आपातकालीन गर्भनिरोधक चाहने वाली महिलाएँ।", note: "समय के साथ प्रभावकारिता कम हो जाती है; तेजी से काम करें।" } },
+            { id: "intimacy", cat: "safety", icon: "fas fa-heartbeat", url: "tools/intimacy.html", en: { name: "Intimacy Safe Time", desc: "Double check non-fertile days.", how: "Review cycle data logic.", when: "Before intimacy if avoiding pregnancy naturally.", who: "Couples using natural tracking.", note: "Always use backup protection if unsure." }, hi: { name: "अंतरंगता सुरक्षित समय", desc: "गैर-उपजाऊ दिनों की दोबारा जांच करें।", how: "चक्र डेटा तर्क की समीक्षा करें।", when: "यदि प्राकृतिक रूप से गर्भावस्था से बच रहे हैं तो अंतरंगता से पहले।", who: "प्राकृतिक ट्रैकिंग का उपयोग करने वाले जोड़े।", note: "यदि अनिश्चित हैं तो हमेशा बैकअप सुरक्षा का उपयोग करें।" } },
+            { id: "infection", cat: "safety", icon: "fas fa-bacteria", url: "tools/infection.html", en: { name: "Infection Symptoms Checker", desc: "Check for UTI, Yeast, or BV signs.", how: "Select symptoms like itching or unusual discharge.", when: "Experiencing vaginal discomfort.", who: "Women with abnormal symptoms.", note: "Requires medical diagnosis for antibiotics." }, hi: { name: "संक्रमण लक्षण चेकर", desc: "यूटीआई, यीस्ट या बीवी के संकेतों की जांच करें।", how: "खुजली या असामान्य स्राव जैसे लक्षणों का चयन करें।", when: "योनि में परेशानी का अनुभव होने पर।", who: "असामान्य लक्षणों वाली महिलाएँ।", note: "एंटीबायोटिक्स के लिए चिकित्सा निदान की आवश्यकता होती है।" } },
+            { id: "hygiene", cat: "safety", icon: "fas fa-hands-wash", url: "tools/hygiene.html", en: { name: "Hygiene Guide", desc: "Best practices for intimate care.", how: "Read expert recommendations.", when: "Anytime.", who: "All women and girls.", note: "Avoid scented soaps and douching." }, hi: { name: "स्वच्छता गाइड", desc: "अंतरंग देखभाल के लिए सर्वोत्तम अभ्यास।", how: "विशेषज्ञ की सिफारिशें पढ़ें।", when: "किसी भी समय।", who: "सभी महिलाएँ और लड़कियाँ।", note: "सुगंधित साबुन और डूशिंग से बचें।" } },
+
+            // EMERGENCY TOOLS
+            { id: "doctor", cat: "emergency", icon: "fas fa-stethoscope", url: "tools/doctor.html", en: { name: "Doctor Finder", desc: "Find nearby gynecologists.", how: "Enable location services.", when: "Needing medical consultation.", who: "Anyone needing professional care.", note: "Always check reviews and hospital affiliations." }, hi: { name: "डॉक्टर फाइंडर", desc: "आसपास के स्त्री रोग विशेषज्ञों को खोजें।", how: "स्थान (लोकेशन) सेवाएं सक्षम करें।", when: "चिकित्सा परामर्श की आवश्यकता होने पर।", who: "पेशेवर देखभाल की आवश्यकता वाला कोई भी व्यक्ति।", note: "हमेशा समीक्षाओं और अस्पताल की संबद्धता की जांच करें।" } },
+            { id: "hospital", cat: "emergency", icon: "fas fa-hospital", url: "tools/hospital.html", en: { name: "Hospital Finder", desc: "Locate emergency maternity wards.", how: "Use GPS location mapping.", when: "In a medical emergency.", who: "Pregnant women or extreme pain sufferers.", note: "Call your local emergency number directly if critical." }, hi: { name: "अस्पताल फाइंडर", desc: "आपातकालीन मातृत्व वार्ड का पता लगाएँ।", how: "जीपीएस लोकेशन मैपिंग का उपयोग करें।", when: "एक चिकित्सा आपात स्थिति में।", who: "गर्भवती महिलाएँ या अत्यधिक दर्द से पीड़ित।", note: "गंभीर होने पर सीधे अपने स्थानीय आपातकालीन नंबर पर कॉल करें।" } },
+            { id: "medicine", cat: "emergency", icon: "fas fa-clock", url: "tools/medicine.html", en: { name: "Medicine Reminder", desc: "Set alarms for pills.", how: "Input pill name and frequency.", when: "Starting a new prescription or birth control.", who: "Women on daily medication.", note: "Missing birth control pills reduces efficacy." }, hi: { name: "दवा रिमाइंडर", desc: "गोलियों के लिए अलार्म सेट करें।", how: "गोली का नाम और आवृत्ति दर्ज करें।", when: "नया नुस्खा या जन्म नियंत्रण शुरू करना।", who: "दैनिक दवा लेने वाली महिलाएँ।", note: "गर्भनिरोधक गोलियां छूटने से प्रभावकारिता कम हो जाती है।" } },
+            { id: "emergency-contact", cat: "emergency", icon: "fas fa-phone-alt", url: "tools/emergency-contact.html", en: { name: "Emergency Contact", desc: "Quick dial safe contacts.", how: "Setup 3 SOS numbers.", when: "In immediate danger or health crisis.", who: "All users.", note: "Keep your phone charged and location on." }, hi: { name: "आपातकालीन संपर्क", desc: "सुरक्षित संपर्कों को तुरंत डायल करें।", how: "3 एसओएस नंबर सेटअप करें।", when: "तत्काल खतरे या स्वास्थ्य संकट में।", who: "सभी उपयोगकर्ता।", note: "अपना फोन चार्ज रखें और लोकेशन ऑन रखें।" } },
+            { id: "pain-relief", cat: "emergency", icon: "fas fa-band-aid", url: "tools/pain-relief.html", en: { name: "Pain Relief Guide", desc: "Immediate steps for severe cramps.", how: "Follow instant relief protocols.", when: "Experiencing debilitating pain.", who: "Endometriosis or severe PMS sufferers.", note: "Pain that causes vomiting requires the ER." }, hi: { name: "दर्द निवारक गाइड", desc: "गंभीर ऐंठन के लिए तत्काल कदम।", how: "तत्काल राहत प्रोटोकॉल का पालन करें।", when: "दुर्बल करने वाले दर्द का अनुभव होने पर।", who: "एंडोमेट्रियोसिस या गंभीर पीएमएस से पीड़ित।", note: "उल्टी का कारण बनने वाले दर्द के लिए ईआर की आवश्यकता होती है।" } },
+
+            // AI TOOLS
+            { id: "ai-health", cat: "ai", icon: "fas fa-robot", url: "tools/ai-health.html", en: { name: "AI Health Assistant", desc: "Chat with our smart bot.", how: "Type your health questions.", when: "Need quick, non-medical advice.", who: "Curious users.", note: "AI is not a doctor. Do not use for emergencies." }, hi: { name: "AI स्वास्थ्य सहायक", desc: "हमारे स्मार्ट बॉट से चैट करें।", how: "अपने स्वास्थ्य प्रश्न टाइप करें।", when: "त्वरित, गैर-चिकित्सीय सलाह की आवश्यकता होने पर।", who: "जिज्ञासु उपयोगकर्ता।", note: "AI डॉक्टर नहीं है। आपात स्थिति के लिए उपयोग न करें।" } },
+            { id: "ai-diet", cat: "ai", icon: "fas fa-leaf", url: "tools/ai-diet.html", en: { name: "AI Diet Suggestion", desc: "Get personalized recipes.", how: "Input dietary preferences and cycle phase.", when: "Meal planning.", who: "Users wanting targeted nutrition.", note: "AI generates recipes based on available database." }, hi: { name: "AI आहार सुझाव", desc: "वैयक्तिकृत व्यंजन (रेसिपी) प्राप्त करें।", how: "आहार संबंधी प्राथमिकताएं और चक्र चरण दर्ज करें।", when: "भोजन योजना बनाते समय।", who: "लक्षित पोषण चाहने वाले उपयोगकर्ता।", note: "AI उपलब्ध डेटाबेस के आधार पर रेसिपी बनाता है।" } },
+            { id: "ai-mood", cat: "ai", icon: "fas fa-magic", url: "tools/ai-mood.html", en: { name: "AI Mood Suggestion", desc: "Activities to boost your mood.", how: "Select current emotion.", when: "Feeling down or bored.", who: "Anyone needing a mental lift.", note: "Includes guided breathing and music suggestions." }, hi: { name: "AI मूड सुझाव", desc: "आपके मूड को बेहतर बनाने वाली गतिविधियाँ।", how: "वर्तमान भावना का चयन करें।", when: "उदास या ऊब महसूस होने पर।", who: "किसी को भी जिसे मानसिक शांति की आवश्यकता है।", note: "इसमें निर्देशित श्वास और संगीत सुझाव शामिल हैं।" } },
+            { id: "ai-preg", cat: "ai", icon: "fas fa-baby-carriage", url: "tools/ai-preg.html", en: { name: "AI Pregnancy Assistant", desc: "Weekly baby development facts.", how: "Ask about your current week.", when: "Want to learn about fetal growth.", who: "Expectant mothers.", note: "Verify medical facts with your OBGYN." }, hi: { name: "AI गर्भावस्था सहायक", desc: "साप्ताहिक शिशु विकास तथ्य।", how: "अपने वर्तमान सप्ताह के बारे में पूछें।", when: "भ्रूण के विकास के बारे में जानना चाहते हैं।", who: "गर्भवती माताएं।", note: "अपने OBGYN के साथ चिकित्सा तथ्यों की पुष्टि करें।" } },
+            { id: "ai-wellness", cat: "ai", icon: "fas fa-spa", url: "tools/ai-wellness.html", en: { name: "AI Wellness Guide", desc: "Custom holistic health plans.", how: "Take a lifestyle quiz.", when: "Looking for a lifestyle reset.", who: "Users focusing on overall wellness.", note: "Combines sleep, diet, and movement." }, hi: { name: "AI वेलनेस गाइड", desc: "कस्टम समग्र स्वास्थ्य योजनाएं।", how: "लाइफस्टाइल क्विज़ लें।", when: "जीवनशैली रीसेट की तलाश में हैं।", who: "समग्र कल्याण पर ध्यान केंद्रित करने वाले उपयोगकर्ता।", note: "नींद, आहार और गति को जोड़ता है।" } }
+        ];
+
+        // Canvas Animation System preserved exactly
+        function initCanvas() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles =[];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.r = Math.random() * 4 + 1;
+                    this.dx = (Math.random() - 0.5) * 0.5;
+                    this.dy = (Math.random() - 0.5) * 0.5;
+                    this.opacity = Math.random() * 0.5 + 0.1;
+                }
+                update() {
+                    this.x += this.dx;
+                    this.y += this.dy;
+                    if (this.x < 0 || this.x > width) this.dx *= -1;
+                    if (this.y < 0 || this.y > height) this.dy *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 90, 122, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 40; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Render UI Elements based on Language Sync
+        function updateStaticUI() {
+            const dict = uiDict[currentLang];
+            document.title = dict.title;
+            document.getElementById('ui-title').innerText = dict.title;
+            document.getElementById('searchInput').placeholder = dict.search;
+            document.getElementById('ui-no-results').innerText = dict.noResults;
+            document.getElementById('ui-try-again').innerText = dict.tryAgain;
+            
+            // Modal Labels
+            document.getElementById('ui-how-to-use').innerText = dict.howToUse;
+            document.getElementById('ui-when-to-use').innerText = dict.whenToUse;
+            document.getElementById('ui-who-should-use').innerText = dict.whoShouldUse;
+            document.getElementById('ui-important-note').innerText = dict.importantNote;
+        }
+
+        // Render Tool Cards 
+        function renderTools(searchQuery = '') {
+            const container = document.getElementById('toolsContainer');
+            container.innerHTML = '';
+            
+            const categories =['period', 'pregnancy', 'health', 'mental', 'lifestyle', 'safety', 'emergency', 'ai'];
+            let totalMatches = 0;
+            const query = searchQuery.toLowerCase().trim();
+
+            categories.forEach(cat => {
+                const catTools = toolsData.filter(t => t.cat === cat);
+                let matchedTools = catTools;
+
+                if (query) {
+                    matchedTools = catTools.filter(t => {
+                        return t[currentLang].name.toLowerCase().includes(query) || 
+                               t[currentLang].desc.toLowerCase().includes(query);
+                    });
+                }
+
+                if (matchedTools.length > 0) {
+                    totalMatches += matchedTools.length;
+                    
+                    // Category Title
+                    const catTitle = document.createElement('h3');
+                    catTitle.className = 'category-title';
+                    catTitle.innerText = uiDict[currentLang]['cat_' + cat];
+                    container.appendChild(catTitle);
+
+                    // Grid Row
+                    const row = document.createElement('div');
+                    row.className = 'row g-3';
+
+                    matchedTools.forEach(tool => {
+                        const col = document.createElement('div');
+                        col.className = 'col-6 col-md-4 col-lg-3';
+                        
+                        col.innerHTML = `
+                            <div class="tool-card">
+                                <button class="info-btn" onclick="openInfoModal('${tool.id}')" aria-label="Info">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <div class="tool-icon-wrapper">
+                                    <i class="${tool.icon}"></i>
+                                </div>
+                                <h4 class="tool-name">${tool[currentLang].name}</h4>
+                                <p class="tool-desc">${tool[currentLang].desc}</p>
+                                <a href="${tool.url}" class="open-btn" onclick="openToolEffect(event)">${uiDict[currentLang].btnOpen}</a>
+                            </div>
+                        `;
+                        row.appendChild(col);
+                    });
+                    container.appendChild(row);
+                }
+            });
+
+            // Handle Empty State
+            const emptyState = document.getElementById('emptyState');
+            if (totalMatches === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        // Cute Particle Effect on Button Click
+        function openToolEffect(e) {
+            createParticles(e.clientX, e.clientY);
+        }
+
+        // Search Listener
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderTools(e.target.value);
+        });
+
+        // Language Toggle (Globally Synced)
+        function toggleLanguage(e) {
+            if(e) createParticles(e.clientX, e.clientY);
+            currentLang = currentLang === 'en' ? 'hi' : 'en';
+            
+            // Save to LocalStorage so Home Page also updates
+            configMem.lang = currentLang;
+            localStorage.setItem('appConfig', JSON.stringify(configMem));
+            
+            updateStaticUI();
+            renderTools(document.getElementById('searchInput').value);
+        }
+
+        // Open Info Modal
+        function openInfoModal(toolId) {
+            const tool = toolsData.find(t => t.id === toolId);
+            if(tool) {
+                document.getElementById('modalIcon').className = tool.icon;
+                document.getElementById('modalName').innerText = tool[currentLang].name;
+                document.getElementById('modalDesc').innerText = tool[currentLang].desc;
+                document.getElementById('modalHow').innerText = tool[currentLang].how;
+                document.getElementById('modalWhen').innerText = tool[currentLang].when;
+                document.getElementById('modalWho').innerText = tool[currentLang].who;
+                document.getElementById('modalNote').innerText = tool[currentLang].note;
+
+                const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
+                infoModal.show();
+            }
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            applyGlobalTheme();
+            initCanvas();
+            updateStaticUI();
+            renderTools();
+        });
+
+    </script>
+</body>
+</html>
