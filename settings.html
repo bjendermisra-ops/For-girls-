@@ -183,23 +183,48 @@
              document.getElementById('uxLangPref').value = configBase.lang;
              if(configBase.pregMode) { document.getElementById('mDSwitchPg').checked = true; document.body.classList.add('preg-mode'); document.getElementById('mascot-doll').innerText="👼"; }
              
-             document.getElementById('toglPushSet').checked = localStorage.getItem('masterToglStatus') !== "NO"; 
+             // STRICTLY DEFAULT OFF LOGIC: Will only be checked if explicitly saved as YES previously
+             document.getElementById('toglPushSet').checked = localStorage.getItem('masterToglStatus') === "YES"; 
+             
              document.getElementById('prefPeriod').checked = configBase.alerts.period;
              document.getElementById('prefWater').checked = configBase.alerts.water;
              document.getElementById('prefLove').checked = configBase.alerts.love;
              
              document.getElementById('tAlertMode').value = localStorage.getItem('lastFreqKey') || "DAILY";
-             toggleSubOptions(); transTxt();
+             
+             // Initialize sub-options UI based on toggle status but without triggering prompt on boot
+             let chk = document.getElementById('toglPushSet').checked;
+             document.getElementById('subOpts').style.opacity = chk ? "1" : "0.4";
+             document.getElementById('subOpts').style.pointerEvents = chk ? "auto" : "none";
+
+             transTxt();
              setTimeout(()=>pokeDoll(), 1000);
         }
+
         function runTranslateAppLine(valX){ configBase.lang=valX; localStorage.setItem('appConfig', JSON.stringify(configBase)); location.reload();}
         function runSaveFutureSys(vx) { configBase.pregMode=vx; localStorage.setItem('appConfig', JSON.stringify(configBase)); location.reload(); }
         function transTxt(){ document.querySelectorAll('[data-'+configBase.lang+']').forEach(a=>{ a.innerText = a.getAttribute('data-'+configBase.lang);}); }
+        
         function toggleSubOptions() {
             let chk = document.getElementById('toglPushSet').checked;
             document.getElementById('subOpts').style.opacity = chk ? "1" : "0.4";
             document.getElementById('subOpts').style.pointerEvents = chk ? "auto" : "none";
-            if(!chk) pokeDoll(configBase.lang=='hi'?"अरे! तुमने मेरे नोटिफिकेशन्स बंद कर दिए 🥺":"Oh no! You muted me 🥺");
+            
+            if(chk) {
+                pokeDoll(configBase.lang=='hi'?"अलर्ट चालू कर दिए! मैं परमिशन सेट कर रही हूँ... 🔔":"Alerts ON! Let me set up permissions... 🔔");
+                
+                // Trigger Web Notification Permission if available
+                if("Notification" in window && Notification.permission !== "granted") {
+                    Notification.requestPermission();
+                }
+                
+                // 🟢 TRIGGER SMART PERMISSIONS VIA JAVASCRIPT INTERFACE 🟢
+                if (window.Android && window.Android.askForSmartPermissions) {
+                    window.Android.askForSmartPermissions();
+                }
+            } else {
+                pokeDoll(configBase.lang=='hi'?"अरे! तुमने मेरे नोटिफिकेशन्स बंद कर दिए 🥺":"Oh no! You muted me 🥺");
+            }
         }
 
         // --- 🧠 SMART JAVA SYNC ---
