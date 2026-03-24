@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Flow Tracker</title>
+    <style>
+        :root{--p:#FF5A7A;--bg:#FEF1F6;--c:#fff;--t:#333}
+        body{background:var(--bg);font-family:'Nunito',sans-serif;margin:0;padding:20px 20px 100px;color:var(--t)}
+        .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5}
+        .b1{width:200px;height:200px;background:var(--p);top:-50px;left:-50px;animation:f 8s infinite alternate}
+        .b2{width:250px;height:250px;background:#FFD1E3;bottom:100px;right:-50px;animation:f 10s infinite alternate-reverse}
+        @keyframes f{to{transform:translateY(30px) scale(1.1)}}
+        .nav{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .back{background:#fff;width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;color:var(--p);text-decoration:none;font-size:24px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+        .card{background:var(--c);border-radius:25px;padding:25px;box-shadow:0 10px 25px rgba(255,90,122,.1);animation:slideUp .5s}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        label{font-weight:bold;color:#666;font-size:14px;display:block;margin:15px 0 5px}
+        select{width:100%;padding:15px;border:2px solid #eee;border-radius:15px;font-size:16px;outline:none;box-sizing:border-box}
+        select:focus{border-color:var(--p)}
+        .btn{width:100%;background:linear-gradient(135deg,var(--p),#FF7696);color:#fff;border:none;padding:18px;border-radius:15px;font-size:16px;font-weight:bold;margin-top:20px;cursor:pointer;box-shadow:0 5px 15px rgba(255,90,122,.3)}
+        .res{display:none;background:#FFF0F3;border:2px dashed var(--p);padding:20px;border-radius:20px;margin-top:20px;text-align:center;font-weight:bold;animation:pop .4s}
+        .mascot{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:flex-end;z-index:100}
+        .m-doll{font-size:45px;background:radial-gradient(circle,rgba(255,255,255,.8),transparent);border-radius:50%;width:60px;height:60px;display:flex;justify-content:center;align-items:center;animation:f 3s infinite alternate}
+        .m-msg{background:#fff;padding:10px 15px;border-radius:15px 15px 0 15px;font-size:13px;font-weight:bold;color:var(--p);box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:5px;display:none;animation:pop .3s}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="mascot">
+        <div class="m-msg" id="m-msg"></div>
+        <div class="m-doll" onclick="showM('हाइजीन का ध्यान रखना मेरी जान! 🧼')">🧚‍♀️</div>
+    </div>
+    
+    <div class="nav">
+        <a href="../tools.html" class="back">‹</a>
+        <h2 style="margin:0">Flow Tracker</h2>
+    </div>
 
+    <div class="card">
+        <label>Pads/Tampons changed today?</label>
+        <select id="pads">
+            <option value="1">1 to 2 (Light)</option>
+            <option value="3">3 to 5 (Normal)</option>
+            <option value="6">6 to 8 (Heavy)</option>
+            <option value="9">9+ (Very Heavy)</option>
+        </select>
+        <button class="btn" onclick="calc()">Check Status 🩸</button>
+        <div class="res" id="res"></div>
+    </div>
+
+    <script>
+        function showM(txt){
+            let m = document.getElementById('m-msg');
+            m.innerText = txt; m.style.display="block";
+            setTimeout(()=>m.style.display="none", 4000);
+        }
+        function calc(){
+            let v = parseInt(document.getElementById('pads').value);
+            let res = document.getElementById('res');
+            res.style.display="block";
+
+            if(v >= 9) {
+                res.innerHTML = "Very Heavy Flow! If you soak a pad every hour, please consult a doctor immediately. 🚨";
+                showM("प्लीज़ डॉक्टर से बात कर लो, ध्यान रखो! 🥺");
+            } else if (v >= 6) {
+                res.innerHTML = "Heavy Flow. Make sure to eat iron-rich foods and stay hydrated. 🍫";
+                showM("आयरन वाली चीजें खाओ और आराम करो! 🌿");
+            } else {
+                res.innerHTML = "Normal Flow. Keep changing pads every 4-6 hours for good hygiene. ✨";
+                showM("एकदम नॉर्मल है! सफाई का ध्यान रखना! 🌸");
+            }
+        }
+        setTimeout(()=>showM("आज का फ्लो कैसा है? मुझे बताओ 🩸"), 500);
+    </script>
+</body>
+</html>
