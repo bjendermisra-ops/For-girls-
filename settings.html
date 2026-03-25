@@ -156,8 +156,10 @@
 
     <script>
         const amData = JSON.parse(localStorage.getItem('userData'));
-        let configBase = JSON.parse(localStorage.getItem('appConfig')) || { lang: 'hi', pregMode:false, alerts:{period:true, water:true, love:true} };
-        if(!configBase.alerts) configBase.alerts = {period:true, water:true, love:true};
+        
+        // 🛠 FIX 1: By default all sub-alerts are OFF (false) for a new user
+        let configBase = JSON.parse(localStorage.getItem('appConfig')) || { lang: 'hi', pregMode:false, alerts:{period:false, water:false, love:false} };
+        if(!configBase.alerts) configBase.alerts = {period:false, water:false, love:false};
 
         // Mascot Helper Functions
         function pokeDoll(text) {
@@ -205,26 +207,60 @@
         function runSaveFutureSys(vx) { configBase.pregMode=vx; localStorage.setItem('appConfig', JSON.stringify(configBase)); location.reload(); }
         function transTxt(){ document.querySelectorAll('[data-'+configBase.lang+']').forEach(a=>{ a.innerText = a.getAttribute('data-'+configBase.lang);}); }
         
+        // 🛠 FIX 2: Strict Permission Checking Logic Before Turning Toggle ON
         function toggleSubOptions() {
-            let chk = document.getElementById('toglPushSet').checked;
-            document.getElementById('subOpts').style.opacity = chk ? "1" : "0.4";
-            document.getElementById('subOpts').style.pointerEvents = chk ? "auto" : "none";
+            let tg = document.getElementById('toglPushSet');
+            let chk = tg.checked;
             
             if(chk) {
-                pokeDoll(configBase.lang=='hi'?"अलर्ट चालू कर दिए! मैं परमिशन सेट कर रही हूँ... 🔔":"Alerts ON! Let me set up permissions... 🔔");
-                
-                // Trigger Web Notification Permission if available
-                if("Notification" in window && Notification.permission !== "granted") {
-                    Notification.requestPermission();
+                // Check native Android permission first (using our new Java method)
+                if (window.Android && window.Android.hasNotificationPermission) {
+                    if (!window.Android.hasNotificationPermission()) {
+                        tg.checked = false; // TURNS OFF TOGGLE IMMEDIATELY
+                        window.Android.askForSmartPermissions(); // Ask native permission
+                        pokeDoll(configBase.lang=='hi'?"पहले नोटिफिकेशन की परमिशन दे दो प्लीज! 🙏":"Please grant notification permission first! 🙏");
+                        return; // Stop execution until user grants it and clicks again
+                    }
+                } 
+                // Fallback for Web Notification API
+                else if ("Notification" in window) {
+                    if (Notification.permission !== "granted") {
+                        tg.checked = false; // TURNS OFF TOGGLE IMMEDIATELY
+                        
+                        Notification.requestPermission().then(function(permission) {
+                            if (permission === "granted") {
+                                tg.checked = true; // Turn back ON when granted
+                                proceedEnable();
+                            } else {
+                                pokeDoll(configBase.lang=='hi'?"परमिशन के बिना मैं कैसे याद दिलाऊँगी? 🥺":"How can I remind you without permission? 🥺");
+                            }
+                        });
+                        
+                        if (window.Android && window.Android.askForSmartPermissions) {
+                            window.Android.askForSmartPermissions();
+                        }
+                        return;
+                    }
                 }
                 
-                // 🟢 TRIGGER SMART PERMISSIONS VIA JAVASCRIPT INTERFACE 🟢
-                if (window.Android && window.Android.askForSmartPermissions) {
-                    window.Android.askForSmartPermissions();
-                }
+                // If permission is already granted, proceed directly
+                proceedEnable();
             } else {
-                pokeDoll(configBase.lang=='hi'?"अरे! तुमने मेरे नोटिफिकेशन्स बंद कर दिए 🥺":"Oh no! You muted me 🥺");
+                proceedDisable();
             }
+        }
+
+        // Helper functions for UI changing after permission check
+        function proceedEnable() {
+            document.getElementById('subOpts').style.opacity = "1";
+            document.getElementById('subOpts').style.pointerEvents = "auto";
+            pokeDoll(configBase.lang=='hi'?"अलर्ट चालू कर दिए! अब अपनी पसंद सेट करो... 🔔":"Alerts ON! Choose your preferences... 🔔");
+        }
+
+        function proceedDisable() {
+            document.getElementById('subOpts').style.opacity = "0.4";
+            document.getElementById('subOpts').style.pointerEvents = "none";
+            pokeDoll(configBase.lang=='hi'?"अरे! तुमने मेरे नोटिफिकेशन्स बंद कर दिए 🥺":"Oh no! You muted me 🥺");
         }
 
         // --- 🧠 SMART JAVA SYNC ---
